@@ -1,94 +1,90 @@
-(function () {
-  'use strict';
+/**
+ * Fit by Floran — Main JavaScript
+ * Theme toggle, hamburger menu, scroll reveal animations
+ */
 
-  // Scroll-reveal animaties.
-  var items = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          e.target.classList.add('in');
-        }
-      });
-    }, { threshold: 0.15 });
-    items.forEach(function (i) { io.observe(i); });
-  } else {
-    items.forEach(function (i) { i.classList.add('in'); });
-  }
+document.addEventListener('DOMContentLoaded', function() {
+	initThemeToggle();
+	initHamburgerMenu();
+	initScrollReveal();
+});
 
-  // Licht/donker-toggle.
-  var SUN = '<circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4.5"></line><line x1="12" y1="19.5" x2="12" y2="22"></line><line x1="4.2" y1="4.2" x2="6" y2="6"></line><line x1="18" y1="18" x2="19.8" y2="19.8"></line><line x1="2" y1="12" x2="4.5" y2="12"></line><line x1="19.5" y1="12" x2="22" y2="12"></line><line x1="4.2" y1="19.8" x2="6" y2="18"></line><line x1="18" y1="6" x2="19.8" y2="4.2"></line>';
-  var MOON = '<path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7z" fill="currentColor" stroke="none"></path>';
+/**
+ * Theme Toggle: Dark/Light mode
+ */
+function initThemeToggle() {
+	const toggleBtns = document.querySelectorAll('.theme-toggle');
+	const htmlEl = document.documentElement;
+	const storageKey = 'fbf-theme';
 
-  var toggleButtons = document.querySelectorAll('.theme-toggle');
+	// Load saved theme preference
+	const savedTheme = localStorage.getItem(storageKey);
+	if (savedTheme === 'light') {
+		htmlEl.setAttribute('data-theme', 'light');
+	}
 
-  function applyTheme(theme) {
-    var isLight = theme === 'light';
-    if (isLight) {
-      document.documentElement.setAttribute('data-theme', 'light');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-    toggleButtons.forEach(function (btn) {
-      var svg = btn.querySelector('svg');
-      if (svg) { svg.innerHTML = isLight ? MOON : SUN; }
-      btn.setAttribute('aria-label', isLight ? 'Wissel naar donkere weergave' : 'Wissel naar lichte weergave');
-      btn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
-    });
-  }
+	toggleBtns.forEach(btn => {
+		btn.addEventListener('click', function() {
+			const currentTheme = htmlEl.getAttribute('data-theme');
+			const newTheme = currentTheme === 'light' ? 'dark' : 'light';
 
-  var saved = 'dark';
-  try {
-    saved = window.localStorage.getItem('fbf-theme') || 'dark';
-  } catch (err) {
-    // localStorage niet beschikbaar (bijv. privémodus); val terug op 'dark'.
-  }
-  applyTheme(saved);
+			htmlEl.setAttribute('data-theme', newTheme);
+			localStorage.setItem(storageKey, newTheme);
+		});
+	});
+}
 
-  toggleButtons.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-      var next = current === 'light' ? 'dark' : 'light';
-      applyTheme(next);
-      try {
-        window.localStorage.setItem('fbf-theme', next);
-      } catch (err) {
-        // negeer opslagfouten
-      }
-    });
-  });
+/**
+ * Hamburger Menu Toggle
+ */
+function initHamburgerMenu() {
+	const hamburgerBtn = document.querySelector('.nav-hamburger');
+	const mobileMenu = document.querySelector('.mobile-menu');
 
-  // Hamburgermenu.
-  var navHamburger = document.getElementById('navHamburger');
-  var mobileMenu = document.getElementById('mobileMenu');
-  var hamburgerIcon = document.getElementById('hamburgerIcon');
-  var BURGER = '<line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line>';
-  var CROSS = '<line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line>';
+	if (!hamburgerBtn || !mobileMenu) return;
 
-  if (navHamburger && mobileMenu && hamburgerIcon) {
-    function closeMenu() {
-      mobileMenu.classList.remove('open');
-      navHamburger.setAttribute('aria-expanded', 'false');
-      navHamburger.setAttribute('aria-label', 'Open menu');
-      hamburgerIcon.innerHTML = BURGER;
-    }
-    function openMenu() {
-      mobileMenu.classList.add('open');
-      navHamburger.setAttribute('aria-expanded', 'true');
-      navHamburger.setAttribute('aria-label', 'Sluit menu');
-      hamburgerIcon.innerHTML = CROSS;
-    }
-    navHamburger.addEventListener('click', function () {
-      mobileMenu.classList.contains('open') ? closeMenu() : openMenu();
-    });
-    mobileMenu.querySelectorAll('a').forEach(function (a) {
-      a.addEventListener('click', closeMenu);
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') { closeMenu(); }
-    });
-    window.matchMedia('(min-width: 861px)').addEventListener('change', function (e) {
-      if (e.matches) { closeMenu(); }
-    });
-  }
-})();
+	hamburgerBtn.addEventListener('click', function() {
+		mobileMenu.classList.toggle('open');
+	});
+
+	// Close menu when a link is clicked
+	const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+	mobileMenuLinks.forEach(link => {
+		link.addEventListener('click', function() {
+			mobileMenu.classList.remove('open');
+		});
+	});
+
+	// Close menu when clicking outside
+	document.addEventListener('click', function(e) {
+		if (!e.target.closest('.nav-hamburger') && !e.target.closest('.mobile-menu')) {
+			mobileMenu.classList.remove('open');
+		}
+	});
+}
+
+/**
+ * Scroll Reveal: fade-in animations for sections
+ */
+function initScrollReveal() {
+	const revealElements = document.querySelectorAll('.reveal');
+
+	if (!revealElements.length) return;
+
+	// Use Intersection Observer for better performance
+	const observerOptions = {
+		threshold: 0.1,
+		rootMargin: '0px 0px -50px 0px'
+	};
+
+	const observer = new IntersectionObserver(function(entries) {
+		entries.forEach(entry => {
+			if (entry.isIntersecting) {
+				entry.target.classList.add('in');
+				observer.unobserve(entry.target);
+			}
+		});
+	}, observerOptions);
+
+	revealElements.forEach(el => observer.observe(el));
+}
