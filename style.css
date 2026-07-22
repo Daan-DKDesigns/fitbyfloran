@@ -2,7 +2,7 @@
 Theme Name: Fit by Floran
 Theme URI: https://www.fitbyfloran.nl
 Author: Daan
-Description: Maatwerkthema voor Fit by Floran, elite performance physiotherapy. Gebouwd op basis van het goedgekeurde designconcept (zwart/goud/groen, dark/light toggle, hamburgermenu, WhatsApp-knop).
+Description: Maatwerkthema voor Fit by Floran, elite performance physiotherapy. Gebouwd op basis van het goedgekeurde designconcept (zwart/goud/groen, dark/light toggle, hamburgermenu, WhatsApp-knop). Responsief en volledig aangepast aan brand guidelines.
 Version: 1.0.0
 Requires at least: 6.0
 Requires PHP: 7.4
@@ -304,6 +304,11 @@ footer{border-top:1px solid var(--line); padding:48px 0;}
   .steps{grid-template-columns:repeat(2,1fr); row-gap:36px;}
   .stats{grid-template-columns:1fr;}
   .cta-inner{flex-direction:column; align-items:flex-start;}
+}
+
+@media (max-width:640px){
+  .services{grid-template-columns:1fr;}
+  .steps{grid-template-columns:1fr;}
 }
 
 /* WordPress basics */
