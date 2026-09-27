@@ -1,90 +1,51 @@
-/**
- * Fit by Floran — Main JavaScript
- * Theme toggle, hamburger menu, scroll reveal animations
- */
+(function () {
+  'use strict';
+  var hamburger = document.getElementById('navHamburger');
+  var menu = document.getElementById('mobileMenu');
+  var icon = document.getElementById('hamburgerIcon');
+  var header = document.querySelector('header');
+  var BURGER = '<line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line>';
+  var CROSS = '<line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line>';
 
-document.addEventListener('DOMContentLoaded', function() {
-	initThemeToggle();
-	initHamburgerMenu();
-	initScrollReveal();
-});
+  if (!hamburger || !menu) { return; }
 
-/**
- * Theme Toggle: Dark/Light mode
- */
-function initThemeToggle() {
-	const toggleBtns = document.querySelectorAll('.theme-toggle');
-	const htmlEl = document.documentElement;
-	const storageKey = 'fbf-theme';
+  // Houdt het menu exact onder de header, ongeacht headerhoogte
+  // (logo-formaat, extra meldingen, desktop/mobiel) of schermrotatie.
+  function syncHeaderHeight() {
+    if (header) {
+      document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+    }
+  }
 
-	// Load saved theme preference
-	const savedTheme = localStorage.getItem(storageKey);
-	if (savedTheme === 'light') {
-		htmlEl.setAttribute('data-theme', 'light');
-	}
+  function closeMenu() {
+    menu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.setAttribute('aria-label', 'Open menu');
+    icon.innerHTML = BURGER;
+  }
+  function openMenu() {
+    syncHeaderHeight();
+    menu.classList.add('open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    hamburger.setAttribute('aria-label', 'Sluit menu');
+    icon.innerHTML = CROSS;
+  }
 
-	toggleBtns.forEach(btn => {
-		btn.addEventListener('click', function() {
-			const currentTheme = htmlEl.getAttribute('data-theme');
-			const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  syncHeaderHeight();
 
-			htmlEl.setAttribute('data-theme', newTheme);
-			localStorage.setItem(storageKey, newTheme);
-		});
-	});
-}
-
-/**
- * Hamburger Menu Toggle
- */
-function initHamburgerMenu() {
-	const hamburgerBtn = document.querySelector('.nav-hamburger');
-	const mobileMenu = document.querySelector('.mobile-menu');
-
-	if (!hamburgerBtn || !mobileMenu) return;
-
-	hamburgerBtn.addEventListener('click', function() {
-		mobileMenu.classList.toggle('open');
-	});
-
-	// Close menu when a link is clicked
-	const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-	mobileMenuLinks.forEach(link => {
-		link.addEventListener('click', function() {
-			mobileMenu.classList.remove('open');
-		});
-	});
-
-	// Close menu when clicking outside
-	document.addEventListener('click', function(e) {
-		if (!e.target.closest('.nav-hamburger') && !e.target.closest('.mobile-menu')) {
-			mobileMenu.classList.remove('open');
-		}
-	});
-}
-
-/**
- * Scroll Reveal: fade-in animations for sections
- */
-function initScrollReveal() {
-	const revealElements = document.querySelectorAll('.reveal');
-
-	if (!revealElements.length) return;
-
-	// Use Intersection Observer for better performance
-	const observerOptions = {
-		threshold: 0.1,
-		rootMargin: '0px 0px -50px 0px'
-	};
-
-	const observer = new IntersectionObserver(function(entries) {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-				entry.target.classList.add('in');
-				observer.unobserve(entry.target);
-			}
-		});
-	}, observerOptions);
-
-	revealElements.forEach(el => observer.observe(el));
-}
+  hamburger.addEventListener('click', function () {
+    menu.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  menu.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', closeMenu);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeMenu(); }
+  });
+  window.matchMedia('(min-width: 1001px)').addEventListener('change', function (e) {
+    if (e.matches) { closeMenu(); }
+  });
+  window.addEventListener('resize', syncHeaderHeight);
+  window.addEventListener('orientationchange', syncHeaderHeight);
+  window.addEventListener('load', syncHeaderHeight);
+})();
