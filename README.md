@@ -1,4 +1,4 @@
-# Fit by Floran — WordPress-thema (op basis van de aangeleverde demo)
+# Fit by Floran - WordPress-thema
 
 Klassiek WordPress-thema, gebouwd op de HTML/CSS-demo die de klant zelf heeft aangeleverd.
 Kleuren, typografie en indeling zijn overgenomen; de tekst en de prijsopgaves zijn via ACF beheerbaar.
@@ -50,13 +50,13 @@ Maak je nog geen menu aan, dan toont het thema automatisch dezelfde 7 links als 
 **Los menu-item "Prijsopgaves"** (links in het WP-admin, eigen kopje):
 - Alle trajecten/memberships compleet in te vullen: titel, beschrijving, prijs, periode-aanduiding,
   een lijst met kenmerken, of het traject uitgelicht moet worden (gouden rand + badge), en de
-  knoptekst/link. Voeg of verwijder trajecten vrij — de website past zich automatisch aan.
+  knoptekst/link. Voeg of verwijder trajecten vrij - de website past zich automatisch aan.
 
 **Site-instellingen** (eigen kopje "Fit by Floran"):
 - WhatsApp-nummer en voorinvultekst, contact-e-mailadres en telefoonnummer voor weergave.
 
 Specialisaties, samenwerkingen (partnerlogo's) en de footer staan vast, zoals in de goedgekeurde
-demo — makkelijk uit te breiden met extra ACF-velden op dezelfde manier als de rest.
+demo - makkelijk uit te breiden met extra ACF-velden op dezelfde manier als de rest.
 
 ## Foto's
 
