@@ -126,7 +126,7 @@
         <div class="maintenance__line"></div>
 
         <p class="maintenance__text">
-            De nieuwe website van Fit by Floran is momenteel in ontwikkeling.
+            De nieuwe website van Fit by Floran is momenteel in ontwikkeling. test23adad
             Binnenkort kun je hier alles vinden over high performance
             fysiotherapie en persoonlijke begeleiding.
         </p>
