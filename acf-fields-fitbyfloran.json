@@ -8,7 +8,7 @@
         "label": "Hero — label boven de titel",
         "name": "hero_eyebrow",
         "type": "text",
-        "default_value": "Fit by Floran \u00b7 High Performance Physiotherapy"
+        "default_value": "Fit by Floran · High Performance Physiotherapy"
       },
       {
         "key": "field_fbf_hero_titel_regel1",
@@ -30,7 +30,7 @@
         "name": "hero_tekst",
         "type": "textarea",
         "rows": 3,
-        "default_value": "Persoonlijke fysiotherapie en performancebegeleiding voor sporters die sterker, belastbaarder en beter willen presteren \u2014 van blessureherstel en preventie tot return-to-performance."
+        "default_value": "Persoonlijke fysiotherapie en performancebegeleiding voor sporters die sterker, belastbaarder en beter willen presteren — van blessureherstel en preventie tot return-to-performance."
       },
       {
         "key": "field_fbf_hero_knop1_tekst",
@@ -81,7 +81,7 @@
         "label": "Over Floran — titel",
         "name": "about_titel",
         "type": "text",
-        "default_value": "Jouw partner in herstel \u00e9n topprestaties."
+        "default_value": "Jouw partner in herstel én topprestaties."
       },
       {
         "key": "field_fbf_about_tekst",
@@ -153,28 +153,9 @@
         "min": 1,
         "max": 4,
         "sub_fields": [
-          {
-            "key": "field_fbf_stap_label",
-            "label": "Label (bijv. 01 \u00b7 ANALYSE)",
-            "name": "label",
-            "type": "text",
-            "required": 1
-          },
-          {
-            "key": "field_fbf_stap_titel",
-            "label": "Titel",
-            "name": "titel",
-            "type": "text",
-            "required": 1
-          },
-          {
-            "key": "field_fbf_stap_tekst",
-            "label": "Tekst",
-            "name": "tekst",
-            "type": "textarea",
-            "rows": 2,
-            "required": 1
-          }
+          { "key": "field_fbf_stap_label", "label": "Label (bijv. 01 · ANALYSE)", "name": "label", "type": "text", "required": 1 },
+          { "key": "field_fbf_stap_titel", "label": "Titel", "name": "titel", "type": "text", "required": 1 },
+          { "key": "field_fbf_stap_tekst", "label": "Tekst", "name": "tekst", "type": "textarea", "rows": 2, "required": 1 }
         ]
       },
       {
@@ -197,14 +178,14 @@
         "name": "diensten_intro",
         "type": "textarea",
         "rows": 2,
-        "default_value": "Van gericht herstel tot intensieve \u00e9\u00e9n-op-\u00e9\u00e9n performancebegeleiding. Vier niveaus, \u00e9\u00e9n uitgangspunt: duurzaam beter presteren."
+        "default_value": "Van gericht herstel tot intensieve één-op-één performancebegeleiding. Vier niveaus, één uitgangspunt: duurzaam beter presteren."
       },
       {
         "key": "field_fbf_diensten_note",
         "label": "",
         "name": "diensten_note",
         "type": "message",
-        "message": "De vier prijsopgaves zelf beheer je niet hier, maar via het aparte menu-item \u201cPrijsopgaves\u201d links in het WordPress-admin."
+        "message": "De pakketten zelf beheer je via het aparte menu-item “Paketten” links in het WordPress-admin."
       },
       {
         "key": "field_fbf_tweede_sectie_afbeelding",
@@ -230,7 +211,149 @@
     "label_placement": "top",
     "instruction_placement": "label",
     "active": true,
-    "description": "Hero, het Over Floran-blok, de Aanpak-kaarten en de sectiekoppen van de voorpagina."
+    "description": "Hero, Over Floran, Aanpak-kaarten en de sectiekoppen van de voorpagina."
+  },
+  {
+    "key": "group_fbf_paketten",
+    "title": "Paketten — Fit by Floran",
+    "fields": [
+      {
+        "key": "field_fbf_paketten_titel",
+        "label": "Sectietitel",
+        "name": "paketten_titel",
+        "type": "text",
+        "default_value": "Kies de begeleiding die bij jouw ambitie past."
+      },
+      {
+        "key": "field_fbf_paketten_intro",
+        "label": "Introductietekst",
+        "name": "paketten_intro",
+        "type": "textarea",
+        "rows": 2,
+        "default_value": "Van gericht herstel tot intensieve één-op-één performancebegeleiding. Vier niveaus, één uitgangspunt: duurzaam beter presteren."
+      },
+      {
+        "key": "field_fbf_paketten",
+        "label": "Pakketten",
+        "name": "paketten",
+        "type": "repeater",
+        "instructions": "Voeg hier de kaarten toe die onder de homepage-sectie ‘Kies de begeleiding die bij jouw ambitie past.’ verschijnen.",
+        "layout": "block",
+        "button_label": "Pakket toevoegen",
+        "min": 1,
+        "sub_fields": [
+          {
+            "key": "field_fbf_pakket_titel",
+            "label": "Titel",
+            "name": "titel",
+            "type": "text",
+            "required": 1
+          },
+          {
+            "key": "field_fbf_pakket_beschrijving",
+            "label": "Korte beschrijving",
+            "name": "beschrijving",
+            "type": "textarea",
+            "rows": 2,
+            "required": 1
+          },
+          {
+            "key": "field_fbf_pakket_vanaf_label",
+            "label": "Label boven de prijs",
+            "name": "vanaf_label",
+            "type": "text",
+            "default_value": "Vanaf"
+          },
+          {
+            "key": "field_fbf_pakket_prijs",
+            "label": "Prijs",
+            "name": "prijs",
+            "type": "text",
+            "instructions": "Bijv. €495 of €149",
+            "required": 1
+          },
+          {
+            "key": "field_fbf_pakket_periode",
+            "label": "Periode-aanduiding",
+            "name": "prijs_periode",
+            "type": "text",
+            "instructions": "Bijv. p.m. Laat leeg als het een eenmalig bedrag is."
+          },
+          {
+            "key": "field_fbf_pakket_features",
+            "label": "Kenmerken (bullet-lijst)",
+            "name": "features",
+            "type": "repeater",
+            "layout": "table",
+            "button_label": "Regel toevoegen",
+            "min": 1,
+            "sub_fields": [
+              {
+                "key": "field_fbf_pakket_feature_regel",
+                "label": "Regel",
+                "name": "regel",
+                "type": "text",
+                "required": 1
+              }
+            ]
+          },
+          {
+            "key": "field_fbf_pakket_uitgelicht",
+            "label": "Uitgelicht pakket (gouden rand + badge)",
+            "name": "uitgelicht",
+            "type": "true_false",
+            "ui": 1,
+            "default_value": 0
+          },
+          {
+            "key": "field_fbf_pakket_badge_tekst",
+            "label": "Badge-tekst",
+            "name": "badge_tekst",
+            "type": "text",
+            "instructions": "Bijv. HIGH PERFORMANCE — alleen zichtbaar als 'Uitgelicht' aan staat.",
+            "conditional_logic": [
+              [
+                {
+                  "field": "field_fbf_pakket_uitgelicht",
+                  "operator": "==",
+                  "value": "1"
+                }
+              ]
+            ]
+          },
+          {
+            "key": "field_fbf_pakket_knop_tekst",
+            "label": "Knoptekst",
+            "name": "knop_tekst",
+            "type": "text",
+            "default_value": "Meer informatie"
+          },
+          {
+            "key": "field_fbf_pakket_knop_link",
+            "label": "Knoplink",
+            "name": "knop_link",
+            "type": "text",
+            "default_value": "#contact"
+          }
+        ]
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "options_page",
+          "operator": "==",
+          "value": "fbf-paketten"
+        }
+      ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "description": "Alle pakketten die op de homepage worden getoond, beheerd via het eigen menu-item ‘Paketten’."
   },
   {
     "key": "group_fbf_prijsopgaves",
@@ -241,48 +364,16 @@
         "label": "Trajecten & memberships",
         "name": "prijsopgaves",
         "type": "repeater",
-        "instructions": "De vier (of meer) prijskaarten in de sectie \u2018Diensten\u2019 op de homepage.",
+        "instructions": "De vier (of meer) prijskaarten in de sectie ‘Diensten’ op de homepage.",
         "layout": "block",
         "button_label": "Prijsopgave toevoegen",
         "min": 1,
         "sub_fields": [
-          {
-            "key": "field_fbf_prijs_titel",
-            "label": "Titel",
-            "name": "titel",
-            "type": "text",
-            "required": 1
-          },
-          {
-            "key": "field_fbf_prijs_beschrijving",
-            "label": "Korte beschrijving",
-            "name": "beschrijving",
-            "type": "textarea",
-            "rows": 2,
-            "required": 1
-          },
-          {
-            "key": "field_fbf_prijs_vanaf_label",
-            "label": "Label boven de prijs",
-            "name": "vanaf_label",
-            "type": "text",
-            "default_value": "Vanaf"
-          },
-          {
-            "key": "field_fbf_prijs_prijs",
-            "label": "Prijs",
-            "name": "prijs",
-            "type": "text",
-            "instructions": "Bijv. \u2018\u20ac495\u2019 of \u2018\u20ac149\u2019.",
-            "required": 1
-          },
-          {
-            "key": "field_fbf_prijs_periode",
-            "label": "Periode-aanduiding",
-            "name": "prijs_periode",
-            "type": "text",
-            "instructions": "Bijv. \u2018p.m.\u2019 \u2014 leeg laten bij een eenmalig bedrag."
-          },
+          { "key": "field_fbf_prijs_titel", "label": "Titel", "name": "titel", "type": "text", "required": 1 },
+          { "key": "field_fbf_prijs_beschrijving", "label": "Korte beschrijving", "name": "beschrijving", "type": "textarea", "rows": 2, "required": 1 },
+          { "key": "field_fbf_prijs_vanaf_label", "label": "Label boven de prijs", "name": "vanaf_label", "type": "text", "default_value": "Vanaf" },
+          { "key": "field_fbf_prijs_prijs", "label": "Prijs", "name": "prijs", "type": "text", "instructions": "Bijv. €495 of €149.", "required": 1 },
+          { "key": "field_fbf_prijs_periode", "label": "Periode-aanduiding", "name": "prijs_periode", "type": "text", "instructions": "Bijv. p.m. — leeg laten bij een eenmalig bedrag." },
           {
             "key": "field_fbf_prijs_features",
             "label": "Kenmerken (bullet-lijst)",
@@ -292,53 +383,13 @@
             "button_label": "Regel toevoegen",
             "min": 1,
             "sub_fields": [
-              {
-                "key": "field_fbf_prijs_feature_regel",
-                "label": "Regel",
-                "name": "regel",
-                "type": "text",
-                "required": 1
-              }
+              { "key": "field_fbf_prijs_feature_regel", "label": "Regel", "name": "regel", "type": "text", "required": 1 }
             ]
           },
-          {
-            "key": "field_fbf_prijs_uitgelicht",
-            "label": "Uitgelicht traject (gouden rand + badge)",
-            "name": "uitgelicht",
-            "type": "true_false",
-            "ui": 1,
-            "default_value": 0
-          },
-          {
-            "key": "field_fbf_prijs_badge_tekst",
-            "label": "Badge-tekst",
-            "name": "badge_tekst",
-            "type": "text",
-            "instructions": "Bijv. \u2018HIGH PERFORMANCE\u2019 \u2014 alleen zichtbaar als \u2018Uitgelicht\u2019 aanstaat.",
-            "conditional_logic": [
-              [
-                {
-                  "field": "field_fbf_prijs_uitgelicht",
-                  "operator": "==",
-                  "value": "1"
-                }
-              ]
-            ]
-          },
-          {
-            "key": "field_fbf_prijs_knop_tekst",
-            "label": "Knoptekst",
-            "name": "knop_tekst",
-            "type": "text",
-            "default_value": "Meer informatie"
-          },
-          {
-            "key": "field_fbf_prijs_knop_link",
-            "label": "Knoplink",
-            "name": "knop_link",
-            "type": "text",
-            "default_value": "#contact"
-          }
+          { "key": "field_fbf_prijs_uitgelicht", "label": "Uitgelicht traject (gouden rand + badge)", "name": "uitgelicht", "type": "true_false", "ui": 1, "default_value": 0 },
+          { "key": "field_fbf_prijs_badge_tekst", "label": "Badge-tekst", "name": "badge_tekst", "type": "text", "instructions": "Bijv. HIGH PERFORMANCE — alleen zichtbaar als ‘Uitgelicht’ aanstaat.", "conditional_logic": [[{ "field": "field_fbf_prijs_uitgelicht", "operator": "==", "value": "1" }]] },
+          { "key": "field_fbf_prijs_knop_tekst", "label": "Knoptekst", "name": "knop_tekst", "type": "text", "default_value": "Meer informatie" },
+          { "key": "field_fbf_prijs_knop_link", "label": "Knoplink", "name": "knop_link", "type": "text", "default_value": "#contact" }
         ]
       }
     ],
@@ -357,41 +408,16 @@
     "label_placement": "top",
     "instruction_placement": "label",
     "active": true,
-    "description": "Alle trajecten/memberships met prijs en kenmerken, beheerd via het eigen menu-item \u2018Prijsopgaves\u2019."
+    "description": "Alle trajecten/memberships met prijs en kenmerken, beheerd via het eigen menu-item ‘Prijsopgaves’."
   },
   {
     "key": "group_fbf_site_instellingen",
     "title": "Site-instellingen — Fit by Floran",
     "fields": [
-      {
-        "key": "field_fbf_whatsapp_nummer",
-        "label": "WhatsApp nummer",
-        "name": "whatsapp_nummer",
-        "type": "text",
-        "instructions": "Internationaal formaat, zonder + of 00. Bijvoorbeeld: 31634280140.",
-        "default_value": "31634280140"
-      },
-      {
-        "key": "field_fbf_whatsapp_bericht",
-        "label": "WhatsApp voorinvultekst",
-        "name": "whatsapp_bericht",
-        "type": "text",
-        "default_value": "Hallo, ik wil graag een gratis intake plannen"
-      },
-      {
-        "key": "field_fbf_contact_email",
-        "label": "Contact e-mailadres",
-        "name": "contact_email",
-        "type": "text",
-        "default_value": "fitbyfloran@hotmail.com"
-      },
-      {
-        "key": "field_fbf_contact_telefoon",
-        "label": "Contact telefoonnummer (weergave)",
-        "name": "contact_telefoon",
-        "type": "text",
-        "default_value": "06 3428 0140"
-      }
+      { "key": "field_fbf_whatsapp_nummer", "label": "WhatsApp nummer", "name": "whatsapp_nummer", "type": "text", "instructions": "Internationaal formaat, zonder + of 00. Bijvoorbeeld: 31634280140.", "default_value": "31634280140" },
+      { "key": "field_fbf_whatsapp_bericht", "label": "WhatsApp voorinvultekst", "name": "whatsapp_bericht", "type": "text", "default_value": "Hallo, ik wil graag een gratis intake plannen" },
+      { "key": "field_fbf_contact_email", "label": "Contact e-mailadres", "name": "contact_email", "type": "text", "default_value": "fitbyfloran@hotmail.com" },
+      { "key": "field_fbf_contact_telefoon", "label": "Contact telefoonnummer (weergave)", "name": "contact_telefoon", "type": "text", "default_value": "06 3428 0140" }
     ],
     "location": [
       [
