@@ -318,12 +318,15 @@ footer{background:#050505;border-top:1px solid rgba(212,175,55,.25);padding:45px
     min-height: 44px;
     color: #e8e8e5;
     text-decoration: none;
+    transition: color .2s ease, opacity .2s ease;
 }
 
 .mainnav a:hover,
+.mainnav a:focus-visible,
 .mainnav .current-menu-item > a,
 .mainnav .current_page_item > a {
     color: var(--gold2);
+    opacity: 1;
 }
 
 /* Desktop dropdowns */
@@ -360,11 +363,14 @@ footer{background:#050505;border-top:1px solid rgba(212,175,55,.25);padding:45px
     background: transparent;
     color: var(--white);
     cursor: pointer;
+    transition: border-color .2s ease, color .2s ease, background .2s ease;
 }
 
-.nav-hamburger:hover {
+.nav-hamburger:hover,
+.nav-hamburger:focus-visible {
     border-color: var(--gold);
     color: var(--gold2);
+    background: rgba(212,175,55,0.05);
 }
 
 /* Mobile menu: black overlay, content determines height */
@@ -433,12 +439,15 @@ footer{background:#050505;border-top:1px solid rgba(212,175,55,.25);padding:45px
     font-weight: 800;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+    transition: color .2s ease, transform .2s ease;
 }
 
 .mobile-menu a:hover,
+.mobile-menu a:focus-visible,
 .mobile-menu .current-menu-item > a,
 .mobile-menu .current_page_item > a {
     color: var(--gold2);
+    transform: translateX(2px);
 }
 
 .mobile-menu .sub-menu {
