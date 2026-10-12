@@ -39,6 +39,7 @@ function fbf_field( $selector, $default = '', $post_id = false ) {
  * - "Site-instellingen": WhatsApp/contact
  * - "Prijsopgaves": eigen menukopje links in het WP-admin, los van de paginacontent,
  *   met de volledige lijst trajecten/memberships die op de website getoond worden.
+ * - "Paketten": aanvullende beheeropties voor de homepage-sectie
  */
 function fbf_acf_options_pages() {
 	if ( ! function_exists( 'acf_add_options_page' ) ) {
@@ -57,6 +58,14 @@ function fbf_acf_options_pages() {
 		'capability' => 'edit_theme_options',
 		'icon_url'   => 'dashicons-money-alt',
 		'position'   => 21,
+	) );
+	acf_add_options_page( array(
+		'page_title' => 'Paketten',
+		'menu_title' => 'Paketten',
+		'menu_slug'  => 'fbf-paketten',
+		'capability' => 'edit_theme_options',
+		'icon_url'   => 'dashicons-grid-view',
+		'position'   => 22,
 	) );
 }
 add_action( 'acf/init', 'fbf_acf_options_pages', 5 );
@@ -97,7 +106,7 @@ function fbf_admin_notice_acf() {
 	$install_url = admin_url( 'plugin-install.php?s=Advanced+Custom+Fields&tab=search&type=term' );
 	?>
 	<div class="notice notice-warning is-dismissible">
-		<p><strong>Fit by Floran-thema:</strong> Aanbevolen plugin <strong>Advanced Custom Fields (ACF)</strong> is nog niet actief. Nodig om de hero, de teksten en de prijsopgaves te beheren via het WordPress-admin. Zonder ACF blijft de site werken met de ingebouwde voorbeeldteksten.
+		<p><strong>Fit by Floran-thema:</strong> Aanbevolen plugin <strong>Advanced Custom Fields (ACF)</strong> is nog niet actief. Nodig om de hero, de teksten en de prijsopgaves te beheren via het W[...]
 		<a href="<?php echo esc_url( $install_url ); ?>">Plugin installeren / activeren</a></p>
 	</div>
 	<?php
