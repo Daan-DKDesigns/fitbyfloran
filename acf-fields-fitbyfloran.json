@@ -213,6 +213,146 @@
         "type": "image",
         "return_format": "array",
         "preview_size": "medium"
+      },
+      {
+        "key": "field_fbf_special_kicker",
+        "label": "Specialisaties — label",
+        "name": "special_kicker",
+        "type": "text",
+        "default_value": "Specialistische begeleiding"
+      },
+      {
+        "key": "field_fbf_special_titel",
+        "label": "Specialisaties — titel",
+        "name": "special_titel",
+        "type": "text",
+        "default_value": "Gericht advies wanneer jij het nodig hebt."
+      },
+      {
+        "key": "field_fbf_specialisaties",
+        "label": "Specialisaties — kaarten",
+        "name": "specialisaties",
+        "type": "repeater",
+        "layout": "block",
+        "button_label": "Specialisatie toevoegen",
+        "min": 1,
+        "sub_fields": [
+          {
+            "key": "field_fbf_special_kaart_titel",
+            "label": "Titel",
+            "name": "titel",
+            "type": "text",
+            "required": 1
+          },
+          {
+            "key": "field_fbf_special_kaart_tekst",
+            "label": "Tekst",
+            "name": "tekst",
+            "type": "textarea",
+            "rows": 3,
+            "required": 1
+          },
+          {
+            "key": "field_fbf_special_kaart_knop_tekst",
+            "label": "Knoptekst",
+            "name": "knop_tekst",
+            "type": "text"
+          },
+          {
+            "key": "field_fbf_special_kaart_knop_link",
+            "label": "Knoplink",
+            "name": "knop_link",
+            "type": "text",
+            "default_value": "#contact"
+          }
+        ]
+      },
+      {
+        "key": "field_fbf_partners_kicker",
+        "label": "Samenwerkingen — label",
+        "name": "partners_kicker",
+        "type": "text",
+        "default_value": "Samenwerkingen"
+      },
+      {
+        "key": "field_fbf_partners_titel",
+        "label": "Samenwerkingen — titel",
+        "name": "partners_titel",
+        "type": "text",
+        "default_value": "Sterke prestaties bouw je samen."
+      },
+      {
+        "key": "field_fbf_partners_intro",
+        "label": "Samenwerkingen — introtekst",
+        "name": "partners_intro",
+        "type": "textarea",
+        "rows": 2
+      },
+      {
+        "key": "field_fbf_partners",
+        "label": "Samenwerkingen — partners",
+        "name": "partners",
+        "type": "repeater",
+        "layout": "block",
+        "button_label": "Partner toevoegen",
+        "min": 1,
+        "sub_fields": [
+          {
+            "key": "field_fbf_partner_naam",
+            "label": "Naam",
+            "name": "naam",
+            "type": "text",
+            "required": 1
+          },
+          {
+            "key": "field_fbf_partner_initialen",
+            "label": "Initialen (als er geen logo is)",
+            "name": "initialen",
+            "type": "text"
+          },
+          {
+            "key": "field_fbf_partner_url",
+            "label": "Website",
+            "name": "url",
+            "type": "url"
+          },
+          {
+            "key": "field_fbf_partner_logo",
+            "label": "Logo (optioneel)",
+            "name": "logo",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium"
+          }
+        ]
+      },
+      {
+        "key": "field_fbf_partners_note",
+        "label": "Samenwerkingen — toelichting onder de logo's",
+        "name": "partners_note",
+        "type": "text",
+        "default_value": "Klik op een partnerlogo om de website van de organisatie te bezoeken."
+      },
+      {
+        "key": "field_fbf_contact_kicker",
+        "label": "Contact — label",
+        "name": "contact_kicker",
+        "type": "text",
+        "default_value": "Jouw volgende stap"
+      },
+      {
+        "key": "field_fbf_contact_titel",
+        "label": "Contact — titel",
+        "name": "contact_titel",
+        "type": "text",
+        "default_value": "Klaar om het maximale uit jezelf te halen?"
+      },
+      {
+        "key": "field_fbf_contact_intro",
+        "label": "Contact — introtekst",
+        "name": "contact_intro",
+        "type": "textarea",
+        "rows": 2
       }
     ],
     "location": [
@@ -391,6 +531,20 @@
         "name": "contact_telefoon",
         "type": "text",
         "default_value": "06 3428 0140"
+      },
+      {
+        "key": "field_fbf_instagram_url",
+        "label": "Instagram-url",
+        "name": "instagram_url",
+        "type": "url",
+        "instructions": "Leeg laten om het Instagram-icoon in de footer te verbergen."
+      },
+      {
+        "key": "field_fbf_linkedin_url",
+        "label": "LinkedIn-url",
+        "name": "linkedin_url",
+        "type": "url",
+        "instructions": "Leeg laten om het LinkedIn-icoon in de footer te verbergen."
       }
     ],
     "location": [

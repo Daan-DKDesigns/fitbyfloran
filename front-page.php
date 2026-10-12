@@ -4,8 +4,7 @@
  * ACF-beheerbaar (per klantwens): hero (titel/onderschrift/knoppen), het
  * "Over Floran"-blok (titel/ondertitel/knop), "Van analyse..." (titel + 4 kaarten),
  * en de prijsopgaves (los menu-item "Prijsopgaves" in het WP-admin).
- * Overige secties (specialisaties, samenwerkingen) staan vast, zoals in de
- * goedgekeurde demo, en zijn eenvoudig uit te breiden met extra ACF-velden.
+ * Specialisaties, samenwerkingen en socials zijn via ACF beheerbaar.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -87,6 +86,44 @@ if ( ! $fbf_prijzen ) {
 		),
 	);
 }
+
+$fbf_specials = function_exists( 'get_field' ) ? get_field( 'specialisaties' ) : false;
+if ( ! $fbf_specials ) {
+	$fbf_specials = array(
+		array(
+			'titel'      => 'Second Opinion',
+			'tekst'      => 'Twijfel je over een diagnose of behandelplan? We bekijken jouw situatie objectief en vertalen dit naar een helder advies.',
+			'knop_tekst' => 'Plan second opinion',
+			'knop_link'  => '#contact',
+		),
+		array(
+			'titel'      => 'Performance Screening',
+			'tekst'      => 'Krijg inzicht in je huidige fysieke capaciteit, aandachtspunten en de volgende stap richting jouw prestatiedoel.',
+			'knop_tekst' => 'Plan screening',
+			'knop_link'  => '#contact',
+		),
+		array(
+			'titel'      => 'Return-to-Sport & Running',
+			'tekst'      => 'Van sportspecifieke screening en running analysis tot videoanalyse en return-to-performance testing.',
+			'knop_tekst' => 'Plan analyse',
+			'knop_link'  => '#contact',
+		),
+	);
+}
+
+$fbf_partners = function_exists( 'get_field' ) ? get_field( 'partners' ) : false;
+if ( ! $fbf_partners ) {
+	$fbf_partners = array(
+		array( 'naam' => "KNAP'MAN", 'initialen' => 'K', 'url' => 'https://www.knapman.nl/', 'logo' => false ),
+		array( 'naam' => 'EVOLVE PHYSIO', 'initialen' => 'EP', 'url' => 'https://www.evolvephysio.uk/', 'logo' => false ),
+		array( 'naam' => 'STATSPORTS', 'initialen' => 'SS', 'url' => 'https://statsports.com/', 'logo' => false ),
+		array( 'naam' => 'FRANS BOSCH SYSTEMS', 'initialen' => 'FBS', 'url' => 'https://www.fransbosch.systems/', 'logo' => false ),
+		array( 'naam' => 'MB SPORTPSYCHOLOGIE', 'initialen' => 'MB', 'url' => 'https://mbsportpsychologie.nl/', 'logo' => false ),
+	);
+}
+
+$fbf_contact_status = isset( $_GET['contact'] ) ? sanitize_key( wp_unslash( $_GET['contact'] ) ) : '';
+$fbf_wa_url         = fbf_whatsapp_url();
 ?>
 
 <main>
@@ -193,22 +230,18 @@ if ( ! $fbf_prijzen ) {
 
 <section id="specialisaties" style="padding-top:25px">
   <div class="container">
-    <div class="kicker">Specialistische begeleiding</div>
-    <h2>Gericht advies wanneer jij het nodig hebt.</h2>
+    <div class="kicker"><?php echo esc_html( fbf_field( 'special_kicker', 'Specialistische begeleiding' ) ); ?></div>
+    <h2><?php echo esc_html( fbf_field( 'special_titel', 'Gericht advies wanneer jij het nodig hebt.' ) ); ?></h2>
     <div class="special">
+      <?php foreach ( $fbf_specials as $fbf_special ) : ?>
       <div class="special-card">
-        <h3>Second Opinion</h3>
-        <p class="muted">Twijfel je over een diagnose of behandelplan? We bekijken jouw situatie objectief en vertalen dit naar een helder advies.</p>
-        <a class="btn btn-outline" href="#contact">Plan second opinion</a>
+        <h3><?php echo esc_html( $fbf_special['titel'] ); ?></h3>
+        <p class="muted"><?php echo esc_html( $fbf_special['tekst'] ); ?></p>
+        <?php if ( ! empty( $fbf_special['knop_tekst'] ) ) : ?>
+          <a class="btn btn-outline" href="<?php echo esc_url( $fbf_special['knop_link'] ?: '#contact' ); ?>"><?php echo esc_html( $fbf_special['knop_tekst'] ); ?></a>
+        <?php endif; ?>
       </div>
-      <div class="special-card">
-        <h3>Performance Screening</h3>
-        <p class="muted">Krijg inzicht in je huidige fysieke capaciteit, aandachtspunten en de volgende stap richting jouw prestatiedoel.</p>
-      </div>
-      <div class="special-card">
-        <h3>Return-to-Sport &amp; Running</h3>
-        <p class="muted">Van sportspecifieke screening en running analysis tot videoanalyse en return-to-performance testing.</p>
-      </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
@@ -230,28 +263,70 @@ if ( ! $fbf_prijzen ) {
 
 <section id="partners" class="partners">
   <div class="container">
-    <div class="kicker">Samenwerkingen</div>
-    <h2>Strong performance is built together.</h2>
-    <p class="lead">Met trots werk ik samen met professionals en organisaties die kwaliteit, ontwikkeling en prestaties centraal stellen.</p>
+    <div class="kicker"><?php echo esc_html( fbf_field( 'partners_kicker', 'Samenwerkingen' ) ); ?></div>
+    <h2><?php echo esc_html( fbf_field( 'partners_titel', 'Sterke prestaties bouw je samen.' ) ); ?></h2>
+    <p class="lead"><?php echo esc_html( fbf_field( 'partners_intro', 'Met trots werk ik samen met professionals en organisaties die kwaliteit, ontwikkeling en prestaties centraal stellen.' ) ); ?></p>
     <div class="partner-grid">
-      <a class="partner-logo" href="https://www.evolvephysio.uk/" target="_blank" rel="noopener"><span class="partner-initial">EP</span><span>EVOLVE PHYSIO</span></a>
-      <a class="partner-logo" href="https://www.knapman.nl/" target="_blank" rel="noopener"><span class="partner-initial">K</span><span>KNAP'MAN</span></a>
-      <a class="partner-logo" href="https://statsports.com/" target="_blank" rel="noopener"><span class="partner-initial">SS</span><span>STATSPORTS</span></a>
-      <a class="partner-logo" href="https://www.fransbosch.systems/" target="_blank" rel="noopener"><span class="partner-initial">FBS</span><span>FRANS BOSCH SYSTEMS</span></a>
-      <a class="partner-logo" href="https://mbsportpsychologie.nl/" target="_blank" rel="noopener"><span class="partner-initial">MB</span><span>MB SPORTPSYCHOLOGIE</span></a>
+      <?php foreach ( $fbf_partners as $fbf_partner ) :
+        $fbf_partner_url = ! empty( $fbf_partner['url'] ) ? $fbf_partner['url'] : '';
+        $fbf_partner_tag = $fbf_partner_url ? 'a' : 'div';
+      ?>
+      <<?php echo $fbf_partner_tag; ?> class="partner-logo"<?php if ( $fbf_partner_url ) : ?> href="<?php echo esc_url( $fbf_partner_url ); ?>" target="_blank" rel="noopener noreferrer"<?php endif; ?>>
+        <?php if ( ! empty( $fbf_partner['logo']['url'] ) ) : ?>
+          <img src="<?php echo esc_url( $fbf_partner['logo']['url'] ); ?>" alt="<?php echo esc_attr( $fbf_partner['naam'] ); ?>">
+        <?php else : ?>
+          <span class="partner-initial"><?php echo esc_html( $fbf_partner['initialen'] ); ?></span>
+        <?php endif; ?>
+        <span><?php echo esc_html( $fbf_partner['naam'] ); ?></span>
+      </<?php echo $fbf_partner_tag; ?>>
+      <?php endforeach; ?>
     </div>
-    <p class="partner-note">Klik op een partnerlogo om de website van de organisatie te bezoeken.</p>
+    <p class="partner-note"><?php echo esc_html( fbf_field( 'partners_note', 'Klik op een partnerlogo om de website van de organisatie te bezoeken.' ) ); ?></p>
   </div>
 </section>
 
 <section id="contact" class="cta">
   <div class="container">
-    <div class="kicker">Jouw volgende stap</div>
-    <h2>Klaar om het maximale uit jezelf te halen?</h2>
-    <p class="lead">Of jouw doel nu herstel, blessurepreventie of topprestaties is: samen bouwen we aan een lichaam dat klaar is voor de volgende stap.</p>
+    <div class="kicker"><?php echo esc_html( fbf_field( 'contact_kicker', 'Jouw volgende stap' ) ); ?></div>
+    <h2><?php echo esc_html( fbf_field( 'contact_titel', 'Klaar om het maximale uit jezelf te halen?' ) ); ?></h2>
+    <p class="lead"><?php echo esc_html( fbf_field( 'contact_intro', 'Of jouw doel nu herstel, blessurepreventie of topprestaties is: samen bouwen we aan een lichaam dat klaar is voor de volgende stap.' ) ); ?></p>
+
+    <?php if ( $fbf_contact_status === 'verzonden' ) : ?>
+      <p class="contact-form__notice contact-form__notice--ok" role="status">Bedankt. Je bericht is verstuurd. Ik neem zo snel mogelijk contact met je op.</p>
+    <?php elseif ( $fbf_contact_status === 'fout' ) : ?>
+      <p class="contact-form__notice contact-form__notice--err" role="alert">Het bericht kon niet worden verstuurd. Controleer de velden of stuur een WhatsApp.</p>
+    <?php endif; ?>
+
+    <form class="contact-form contact-form--dark" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+      <input type="hidden" name="action" value="fbf_contact">
+      <?php wp_nonce_field( 'fbf_contact', 'fbf_contact_nonce' ); ?>
+      <div class="contact-form__honeypot" aria-hidden="true">
+        <label for="fbf_website">Website</label>
+        <input type="text" name="fbf_website" id="fbf_website" tabindex="-1" autocomplete="off">
+      </div>
+      <div class="contact-form__field">
+        <label for="fbf_naam">Naam</label>
+        <input type="text" id="fbf_naam" name="fbf_naam" required autocomplete="name">
+      </div>
+      <div class="contact-form__field">
+        <label for="fbf_email">E-mailadres</label>
+        <input type="email" id="fbf_email" name="fbf_email" required autocomplete="email">
+      </div>
+      <div class="contact-form__field">
+        <label for="fbf_telefoon">Telefoon <span>(optioneel)</span></label>
+        <input type="tel" id="fbf_telefoon" name="fbf_telefoon" autocomplete="tel">
+      </div>
+      <div class="contact-form__field">
+        <label for="fbf_bericht">Bericht</label>
+        <textarea id="fbf_bericht" name="fbf_bericht" required></textarea>
+      </div>
+      <div class="contact-form__submit">
+        <button class="btn btn-gold" type="submit">Verstuur intake-aanvraag</button>
+      </div>
+    </form>
+
     <div class="actions" style="justify-content:center">
-      <a class="btn btn-gold" href="mailto:<?php echo esc_attr( function_exists('get_field') ? ( get_field('contact_email','option') ?: 'fitbyfloran@hotmail.com' ) : 'fitbyfloran@hotmail.com' ); ?>">Plan vandaag je gratis intake</a>
-      <a class="btn btn-outline" href="https://wa.me/<?php echo esc_attr( function_exists('get_field') ? ( preg_replace('/[^0-9]/','', get_field('whatsapp_nummer','option') ?: '31634280140') ) : '31634280140' ); ?>">WhatsApp</a>
+      <a class="btn btn-outline" href="<?php echo esc_url( $fbf_wa_url ); ?>" target="_blank" rel="noopener noreferrer">WhatsApp</a>
     </div>
   </div>
 </section>

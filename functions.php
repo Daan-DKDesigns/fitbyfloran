@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'FBF_VERSION', '1.0.0' );
+define( 'FBF_VERSION', '1.1.0' );
 
 /** Theme setup */
 function fbf_setup() {
@@ -104,31 +104,92 @@ function fbf_admin_notice_acf() {
 }
 add_action( 'admin_notices', 'fbf_admin_notice_acf' );
 
-/** Fallback hoofdmenu (desktop), zolang er nog geen WP-menu is aangemaakt. */
-function fbf_default_menu() {
-	echo '<ul>
-		<li><a href="#over">Over Floran</a></li>
-		<li><a href="#aanpak">Aanpak</a></li>
-		<li><a href="#diensten">Diensten</a></li>
-		<li><a href="#specialisaties">Specialisaties</a></li>
-		<li><a href="#partners">Samenwerkingen</a></li>
-		<li><a href="#contact">Contact</a></li>
-		<li><a href="#contact" class="nav-cta">Plan je intake</a></li>
+/** Fallback hoofdmenu zolang er nog geen WP-menu is aangemaakt. */
+function fbf_default_menu( $args = array() ) {
+	$class = ! empty( $args['menu_class'] ) ? $args['menu_class'] : '';
+	$home  = esc_url( home_url( '/' ) );
+	echo '<ul' . ( $class ? ' class="' . esc_attr( $class ) . '"' : '' ) . '>
+		<li><a href="' . $home . '#over">Over Floran</a></li>
+		<li><a href="' . $home . '#aanpak">Aanpak</a></li>
+		<li><a href="' . $home . '#diensten">Diensten</a></li>
+		<li><a href="' . $home . '#specialisaties">Specialisaties</a></li>
+		<li><a href="' . $home . '#partners">Samenwerkingen</a></li>
+		<li><a href="' . $home . '#contact">Contact</a></li>
+		<li><a href="' . $home . '#contact" class="nav-cta">Plan je intake</a></li>
 	</ul>';
 }
 
-/** Fallback hoofdmenu (mobiel). */
-function fbf_default_menu_mobile() {
-	echo '<ul>
-		<li><a href="#over">Over Floran</a></li>
-		<li><a href="#aanpak">Aanpak</a></li>
-		<li><a href="#diensten">Diensten</a></li>
-		<li><a href="#specialisaties">Specialisaties</a></li>
-		<li><a href="#partners">Samenwerkingen</a></li>
-		<li><a href="#contact">Contact</a></li>
-		<li><a href="#contact">Plan je intake</a></li>
-	</ul>';
+function fbf_contact_email() {
+	return fbf_field( 'contact_email', 'fitbyfloran@hotmail.com', 'option' );
 }
+
+function fbf_contact_phone() {
+	return fbf_field( 'contact_telefoon', '06 3428 0140', 'option' );
+}
+
+function fbf_tel_href( $display ) {
+	$digits = preg_replace( '/[^0-9+]/', '', (string) $display );
+	if ( $digits === '' ) {
+		return '';
+	}
+	if ( strpos( $digits, '+' ) === 0 ) {
+		return 'tel:' . $digits;
+	}
+	if ( strpos( $digits, '00' ) === 0 ) {
+		return 'tel:+' . substr( $digits, 2 );
+	}
+	if ( strpos( $digits, '0' ) === 0 ) {
+		return 'tel:+31' . substr( $digits, 1 );
+	}
+	return 'tel:+' . $digits;
+}
+
+function fbf_whatsapp_url() {
+	$number  = preg_replace( '/[^0-9]/', '', (string) fbf_field( 'whatsapp_nummer', '31634280140', 'option' ) );
+	$message = fbf_field( 'whatsapp_bericht', 'Hallo, ik wil graag een gratis intake plannen', 'option' );
+	return 'https://wa.me/' . $number . '?text=' . rawurlencode( $message );
+}
+
+function fbf_process_contact_form() {
+	$redirect = home_url( '/' );
+
+	if ( ! isset( $_POST['fbf_contact_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['fbf_contact_nonce'] ) ), 'fbf_contact' ) ) {
+		wp_safe_redirect( $redirect . '?contact=fout#contact' );
+		exit;
+	}
+
+	$honeypot = isset( $_POST['fbf_website'] ) ? sanitize_text_field( wp_unslash( $_POST['fbf_website'] ) ) : '';
+	if ( $honeypot !== '' ) {
+		wp_safe_redirect( $redirect . '?contact=verzonden#contact' );
+		exit;
+	}
+
+	$naam      = isset( $_POST['fbf_naam'] ) ? sanitize_text_field( wp_unslash( $_POST['fbf_naam'] ) ) : '';
+	$email     = isset( $_POST['fbf_email'] ) ? sanitize_email( wp_unslash( $_POST['fbf_email'] ) ) : '';
+	$telefoon  = isset( $_POST['fbf_telefoon'] ) ? sanitize_text_field( wp_unslash( $_POST['fbf_telefoon'] ) ) : '';
+	$bericht   = isset( $_POST['fbf_bericht'] ) ? sanitize_textarea_field( wp_unslash( $_POST['fbf_bericht'] ) ) : '';
+	$naam      = str_replace( array( "\r", "\n" ), '', $naam );
+
+	if ( $naam === '' || ! is_email( $email ) || $bericht === '' ) {
+		wp_safe_redirect( $redirect . '?contact=fout#contact' );
+		exit;
+	}
+
+	$to      = fbf_contact_email();
+	$subject = 'Aanvraag via fitbyfloran.nl — ' . $naam;
+	$body    = "Naam: {$naam}\nE-mail: {$email}\nTelefoon: {$telefoon}\n\nBericht:\n{$bericht}\n";
+	$headers = array(
+		'Content-Type: text/plain; charset=UTF-8',
+		'Reply-To: ' . $naam . ' <' . $email . '>',
+	);
+
+	$sent = wp_mail( $to, $subject, $body, $headers );
+	wp_safe_redirect( $redirect . ( $sent ? '?contact=verzonden#contact' : '?contact=fout#contact' ) );
+	exit;
+}
+add_action( 'admin_post_fbf_contact', 'fbf_process_contact_form' );
+add_action( 'admin_post_nopriv_fbf_contact', 'fbf_process_contact_form' );
+
 function fitbyfloran_maintenance_mode() {
 
     // Admins kunnen de normale website bekijken
