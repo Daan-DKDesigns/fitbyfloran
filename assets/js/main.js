@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Sluit wanneer het desktopmenu weer zichtbaar wordt
     window.addEventListener('resize', function () {
-        if (window.innerWidth > 900) {
+        if (window.innerWidth > 1000) {
             setMenuOpen(false);
         }
     });

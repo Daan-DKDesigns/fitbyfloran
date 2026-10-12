@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                 'theme_location' => 'primary',
                 'container'      => false,
                 'menu_class'     => 'mainnav__list',
-                'fallback_cb'    => false,
+                'fallback_cb'    => 'fbf_default_menu',
                 'depth'          => 2,
             ) );
             ?>
@@ -76,7 +76,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                 'theme_location' => 'primary',
                 'container'      => false,
                 'menu_class'     => 'mobile-menu__list',
-                'fallback_cb'    => false,
+                'fallback_cb'    => 'fbf_default_menu',
                 'depth'          => 2,
             ) );
             ?>
