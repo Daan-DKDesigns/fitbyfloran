@@ -185,7 +185,7 @@
         "label": "",
         "name": "diensten_note",
         "type": "message",
-        "message": "De pakketten zelf beheer je via het aparte menu-item “Paketten” links in het WordPress-admin."
+        "message": "De trajecten en prijzen zelf beheer je via het aparte menu-item “Prijsopgaves” links in het WordPress-admin."
       },
       {
         "key": "field_fbf_tweede_sectie_afbeelding",
@@ -354,201 +354,117 @@
     "description": "Hero, Over Floran, Aanpak-kaarten en de sectiekoppen van de voorpagina."
   },
   {
-    "key": "group_fbf_paketten",
-    "title": "Paketten — Fit by Floran",
+    "key": "group_fbf_prijsopgaves",
+    "title": "Pakketgegevens",
     "fields": [
       {
-        "key": "field_fbf_paketten_titel",
-        "label": "Sectietitel",
-        "name": "paketten_titel",
-        "type": "text",
-        "default_value": "Kies de begeleiding die bij jouw ambitie past."
-      },
-      {
-        "key": "field_fbf_paketten_intro",
-        "label": "Introductietekst",
-        "name": "paketten_intro",
+        "key": "field_fbf_prijs_beschrijving",
+        "label": "Korte beschrijving",
+        "name": "beschrijving",
         "type": "textarea",
         "rows": 2,
-        "default_value": "Van gericht herstel tot intensieve één-op-één performancebegeleiding. Vier niveaus, één uitgangspunt: duurzaam beter presteren."
+        "required": 1
       },
       {
-        "key": "field_fbf_paketten",
-        "label": "Pakketten",
-        "name": "paketten",
-        "type": "repeater",
-        "instructions": "Voeg hier de kaarten toe die onder de homepage-sectie ‘Kies de begeleiding die bij jouw ambitie past.’ verschijnen.",
-        "layout": "block",
-        "button_label": "Pakket toevoegen",
-        "min": 1,
-        "sub_fields": [
-          {
-            "key": "field_fbf_pakket_titel",
-            "label": "Titel",
-            "name": "titel",
-            "type": "text",
-            "required": 1
-          },
-          {
-            "key": "field_fbf_pakket_beschrijving",
-            "label": "Korte beschrijving",
-            "name": "beschrijving",
-            "type": "textarea",
-            "rows": 2,
-            "required": 1
-          },
-          {
-            "key": "field_fbf_pakket_vanaf_label",
-            "label": "Label boven de prijs",
-            "name": "vanaf_label",
-            "type": "text",
-            "default_value": "Vanaf"
-          },
-          {
-            "key": "field_fbf_pakket_prijs",
-            "label": "Prijs",
-            "name": "prijs",
-            "type": "text",
-            "instructions": "Bijv. €495 of €149",
-            "required": 1
-          },
-          {
-            "key": "field_fbf_pakket_periode",
-            "label": "Periode-aanduiding",
-            "name": "prijs_periode",
-            "type": "text",
-            "instructions": "Bijv. p.m. Laat leeg als het een eenmalig bedrag is."
-          },
-          {
-            "key": "field_fbf_pakket_features",
-            "label": "Kenmerken (bullet-lijst)",
-            "name": "features",
-            "type": "repeater",
-            "layout": "table",
-            "button_label": "Regel toevoegen",
-            "min": 1,
-            "sub_fields": [
-              {
-                "key": "field_fbf_pakket_feature_regel",
-                "label": "Regel",
-                "name": "regel",
-                "type": "text",
-                "required": 1
-              }
-            ]
-          },
-          {
-            "key": "field_fbf_pakket_uitgelicht",
-            "label": "Uitgelicht pakket (gouden rand + badge)",
-            "name": "uitgelicht",
-            "type": "true_false",
-            "ui": 1,
-            "default_value": 0
-          },
-          {
-            "key": "field_fbf_pakket_badge_tekst",
-            "label": "Badge-tekst",
-            "name": "badge_tekst",
-            "type": "text",
-            "instructions": "Bijv. HIGH PERFORMANCE — alleen zichtbaar als 'Uitgelicht' aan staat.",
-            "conditional_logic": [
-              [
-                {
-                  "field": "field_fbf_pakket_uitgelicht",
-                  "operator": "==",
-                  "value": "1"
-                }
-              ]
-            ]
-          },
-          {
-            "key": "field_fbf_pakket_knop_tekst",
-            "label": "Knoptekst",
-            "name": "knop_tekst",
-            "type": "text",
-            "default_value": "Meer informatie"
-          },
-          {
-            "key": "field_fbf_pakket_knop_link",
-            "label": "Knoplink",
-            "name": "knop_link",
-            "type": "text",
-            "default_value": "#contact"
-          }
-        ]
-      }
-    ],
-    "location": [
-      [
-        {
-          "param": "options_page",
-          "operator": "==",
-          "value": "fbf-paketten"
-        }
-      ]
-    ],
-    "menu_order": 0,
-    "position": "normal",
-    "style": "default",
-    "label_placement": "top",
-    "instruction_placement": "label",
-    "active": true,
-    "description": "Alle pakketten die op de homepage worden getoond, beheerd via het eigen menu-item ‘Paketten’."
-  },
-  {
-    "key": "group_fbf_prijsopgaves",
-    "title": "Prijsopgaves — Fit by Floran",
-    "fields": [
+        "key": "field_fbf_prijs_vanaf_label",
+        "label": "Label boven de prijs",
+        "name": "vanaf_label",
+        "type": "text",
+        "default_value": "Vanaf"
+      },
       {
-        "key": "field_fbf_prijsopgaves",
-        "label": "Trajecten & memberships",
-        "name": "prijsopgaves",
-        "type": "repeater",
-        "instructions": "De vier (of meer) prijskaarten in de sectie ‘Diensten’ op de homepage.",
-        "layout": "block",
-        "button_label": "Prijsopgave toevoegen",
-        "min": 1,
-        "sub_fields": [
-          { "key": "field_fbf_prijs_titel", "label": "Titel", "name": "titel", "type": "text", "required": 1 },
-          { "key": "field_fbf_prijs_beschrijving", "label": "Korte beschrijving", "name": "beschrijving", "type": "textarea", "rows": 2, "required": 1 },
-          { "key": "field_fbf_prijs_vanaf_label", "label": "Label boven de prijs", "name": "vanaf_label", "type": "text", "default_value": "Vanaf" },
-          { "key": "field_fbf_prijs_prijs", "label": "Prijs", "name": "prijs", "type": "text", "instructions": "Bijv. €495 of €149.", "required": 1 },
-          { "key": "field_fbf_prijs_periode", "label": "Periode-aanduiding", "name": "prijs_periode", "type": "text", "instructions": "Bijv. p.m. — leeg laten bij een eenmalig bedrag." },
-          {
-            "key": "field_fbf_prijs_features",
-            "label": "Kenmerken (bullet-lijst)",
-            "name": "features",
-            "type": "repeater",
-            "layout": "table",
-            "button_label": "Regel toevoegen",
-            "min": 1,
-            "sub_fields": [
-              { "key": "field_fbf_prijs_feature_regel", "label": "Regel", "name": "regel", "type": "text", "required": 1 }
-            ]
-          },
-          { "key": "field_fbf_prijs_uitgelicht", "label": "Uitgelicht traject (gouden rand + badge)", "name": "uitgelicht", "type": "true_false", "ui": 1, "default_value": 0 },
-          { "key": "field_fbf_prijs_badge_tekst", "label": "Badge-tekst", "name": "badge_tekst", "type": "text", "instructions": "Bijv. HIGH PERFORMANCE — alleen zichtbaar als ‘Uitgelicht’ aanstaat.", "conditional_logic": [[{ "field": "field_fbf_prijs_uitgelicht", "operator": "==", "value": "1" }]] },
-          { "key": "field_fbf_prijs_knop_tekst", "label": "Knoptekst", "name": "knop_tekst", "type": "text", "default_value": "Meer informatie" },
-          { "key": "field_fbf_prijs_knop_link", "label": "Knoplink", "name": "knop_link", "type": "text", "default_value": "#contact" }
+        "key": "field_fbf_prijs_prijs",
+        "label": "Prijs",
+        "name": "prijs",
+        "type": "text",
+        "instructions": "Bijv. €495 of €149.",
+        "required": 1
+      },
+      {
+        "key": "field_fbf_prijs_periode",
+        "label": "Periode-aanduiding",
+        "name": "prijs_periode",
+        "type": "text",
+        "instructions": "Bijv. p.m. — leeg laten bij een eenmalig bedrag."
+      },
+      {
+        "key": "field_fbf_prijs_kenmerken",
+        "label": "Wat zit er in het pakket",
+        "name": "kenmerken",
+        "type": "textarea",
+        "instructions": "Eén kenmerk per regel. Elke regel wordt een opsommingsteken op de website.",
+        "rows": 8,
+        "new_lines": "",
+        "required": 1
+      },
+      {
+        "key": "field_fbf_prijs_uitgelicht",
+        "label": "Uitgelicht traject (gouden rand + badge)",
+        "name": "uitgelicht",
+        "type": "true_false",
+        "ui": 1,
+        "default_value": 0
+      },
+      {
+        "key": "field_fbf_prijs_badge_tekst",
+        "label": "Badge-tekst",
+        "name": "badge_tekst",
+        "type": "text",
+        "instructions": "Bijv. HIGH PERFORMANCE — alleen zichtbaar als ‘Uitgelicht’ aanstaat.",
+        "conditional_logic": [
+          [
+            {
+              "field": "field_fbf_prijs_uitgelicht",
+              "operator": "==",
+              "value": "1"
+            }
+          ]
         ]
+      },
+      {
+        "key": "field_fbf_prijs_knop_tekst",
+        "label": "Knoptekst",
+        "name": "knop_tekst",
+        "type": "text",
+        "default_value": "Meer informatie"
+      },
+      {
+        "key": "field_fbf_prijs_knop_link",
+        "label": "Knoplink",
+        "name": "knop_link",
+        "type": "text",
+        "default_value": "#contact"
       }
     ],
     "location": [
       [
         {
-          "param": "options_page",
+          "param": "post_type",
           "operator": "==",
-          "value": "fbf-prijsopgaves"
+          "value": "prijsopgave"
         }
       ]
     ],
     "menu_order": 0,
-    "position": "normal",
-    "style": "default",
+    "position": "acf_after_title",
+    "style": "seamless",
     "label_placement": "top",
     "instruction_placement": "label",
+    "hide_on_screen": [
+      "permalink",
+      "the_content",
+      "excerpt",
+      "discussion",
+      "comments",
+      "slug",
+      "author",
+      "format",
+      "categories",
+      "tags",
+      "send-trackbacks"
+    ],
     "active": true,
-    "description": "Alle trajecten/memberships met prijs en kenmerken, beheerd via het eigen menu-item ‘Prijsopgaves’."
+    "description": "Inhoud van één prijsopgave/pakket. Elk pakket is een eigen item onder ‘Prijsopgaves’ in het WP-admin."
   },
   {
     "key": "group_fbf_site_instellingen",
