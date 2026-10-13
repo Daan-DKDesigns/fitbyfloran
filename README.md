@@ -5,7 +5,7 @@ Kleuren, typografie en indeling zijn overgenomen; de tekst en de prijsopgaves zi
 
 ## Installatie
 
-1. Pak de map `fit-by-floran-demo` uit en plaats hem in `wp-content/themes/` van je local WordPress
+1. Plaats de map van dit thema in `wp-content/themes/` van je (lokale) WordPress
    (of upload de zip direct via **Weergave → Thema's → Nieuwe toevoegen → Thema uploaden**).
 2. Activeer het thema onder **Weergave → Thema's**.
 3. Installeer **Advanced Custom Fields (ACF)** — een gele melding in het admin herinnert je hieraan
@@ -16,6 +16,16 @@ Kleuren, typografie en indeling zijn overgenomen; de tekst en de prijsopgaves zi
    als voorpagina. De ACF-velden voor hero/about/aanpak verschijnen pas zodra dat is ingesteld.
 5. Ga naar **Weergave → Aanpassen → Site-identiteit** en upload het logo van Floran (wordt gebruikt
    in zowel de header als de footer). Zonder logo toont het thema automatisch de tekst "Fit by Floran".
+
+## Onderhoudsmodus
+
+Zolang de site niet live is, zien bezoekers een "Binnenkort live"-pagina (`maintenance.php`,
+met HTTP-status 503 en `noindex`). Ingelogde beheerders zien de echte site. Uitzetten bij livegang:
+zet `FBF_MAINTENANCE` bovenin `functions.php` op `false`, of voeg in `wp-config.php` toe:
+
+```php
+define( 'FBF_MAINTENANCE', false );
+```
 
 ## Menu aanmaken
 
@@ -60,21 +70,27 @@ demo - makkelijk uit te breiden met extra ACF-velden op dezelfde manier als de r
 
 ## Foto's
 
-Het thema bevat geen hardcoded foto's uit de demo (die stonden als losse base64-tekst in de HTML,
-niet geschikt om in een thema te verwerken). Upload de foto's van Floran via de ACF-velden
-hierboven; zolang een veld leeg is, toont de betreffende sectie een duidelijke placeholder in
-plaats van een gebroken afbeelding.
+Upload de foto's van Floran via de ACF-velden hierboven. Zolang een fotoveld leeg is, gebruikt het
+thema de meegeleverde foto's uit `assets/images/` (hero, twee foto's bij "Over Floran" en de foto bij
+"Van herstel naar volledige performance").
+
+Het loginscherm en de onderhoudspagina gebruiken `assets/images/logo.svg`. Het favicon komt uit
+`assets/images/favicon.svg`/`favicon.png`, tenzij er een site-icoon is ingesteld via
+**Weergave → Aanpassen → Site-identiteit**.
 
 ## Bestandsstructuur
 
 ```
-fit-by-floran-demo/
+fitbyfloran/
 ├── style.css                      → theme-header + volledige CSS uit de demo
-├── functions.php                  → theme setup, ACF-registratie, Opties-pagina's, menu-fallback
+├── functions.php                  → theme setup, ACF-registratie, Opties-pagina's, menu-fallback,
+│                                    contactformulier, onderhoudsmodus, loginstijl
+├── maintenance.php                → "Binnenkort live"-pagina
 ├── header.php                     → nav, logo, hamburgermenu (mobiel)
 ├── footer.php                     → footer + WhatsApp-knop
 ├── front-page.php                 → hero t/m contact (homepage)
 ├── index.php / page.php           → fallback-templates
 ├── acf-fields-fitbyfloran.json    → alle ACF-velden, automatisch geregistreerd via code
-└── assets/js/main.js              → hamburgermenu-logica
+├── assets/js/main.js              → hamburgermenu-logica
+└── assets/images/                 → logo's, favicon en standaardfoto's
 ```

@@ -1,16 +1,20 @@
 <?php
 /**
- * Maintenance Page
+ * Onderhoudspagina ("Binnenkort live"), geladen door fitbyfloran_maintenance_mode() in functions.php.
  */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 ?>
-
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
 
     <title>Fit by Floran | Binnenkort live</title>
+    <?php wp_site_icon(); fbf_favicon_fallback(); ?>
 
     <style>
         * {
@@ -115,7 +119,7 @@
 
         <img
             class="maintenance__logo"
-            src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/logo.jpg'); ?>"
+            src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/logo.svg'); ?>"
             alt="Fit by Floran"
         >
 
@@ -126,7 +130,7 @@
         <div class="maintenance__line"></div>
 
         <p class="maintenance__text">
-            De nieuwe website van Fit by Floran is momenteel in ontwikkeling. test23adad
+            De nieuwe website van Fit by Floran is momenteel in ontwikkeling.
             Binnenkort kun je hier alles vinden over high performance
             fysiotherapie en persoonlijke begeleiding.
         </p>

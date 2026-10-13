@@ -1,7 +1,15 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'FBF_VERSION', '1.1.0' );
+define( 'FBF_VERSION', '1.2.0' );
+
+/**
+ * Onderhoudsmodus: bezoekers zien "Binnenkort live", ingelogde beheerders de echte site.
+ * Uitzetten bij livegang: zet hier false, of definieer FBF_MAINTENANCE in wp-config.php.
+ */
+if ( ! defined( 'FBF_MAINTENANCE' ) ) {
+	define( 'FBF_MAINTENANCE', true );
+}
 
 /** Theme setup */
 function fbf_setup() {
@@ -19,6 +27,19 @@ function fbf_assets() {
 	wp_enqueue_script( 'fbf-main', get_template_directory_uri() . '/assets/js/main.js', array(), FBF_VERSION, true );
 }
 add_action( 'wp_enqueue_scripts', 'fbf_assets' );
+
+/** Favicon uit het thema, zolang er geen site-icoon is ingesteld via Aanpassen → Site-identiteit. */
+function fbf_favicon_fallback() {
+	if ( has_site_icon() ) {
+		return;
+	}
+	$dir = get_template_directory_uri() . '/assets/images/';
+	echo '<link rel="icon" href="' . esc_url( $dir . 'favicon.svg' ) . '" type="image/svg+xml">' . "\n";
+	echo '<link rel="icon" href="' . esc_url( $dir . 'favicon.png' ) . '" type="image/png" sizes="512x512">' . "\n";
+	echo '<link rel="apple-touch-icon" href="' . esc_url( $dir . 'favicon.png' ) . '">' . "\n";
+}
+add_action( 'wp_head', 'fbf_favicon_fallback' );
+add_action( 'login_head', 'fbf_favicon_fallback' );
 
 /**
  * Kleine helper: haalt een ACF-veld op met fallback-tekst, zodat de site
@@ -39,7 +60,6 @@ function fbf_field( $selector, $default = '', $post_id = false ) {
  * - "Site-instellingen": WhatsApp/contact
  * - "Prijsopgaves": eigen menukopje links in het WP-admin, los van de paginacontent,
  *   met de volledige lijst trajecten/memberships die op de website getoond worden.
- * - "Paketten": aanvullende beheeropties voor de homepage-sectie
  */
 function fbf_acf_options_pages() {
 	if ( ! function_exists( 'acf_add_options_page' ) ) {
@@ -59,94 +79,8 @@ function fbf_acf_options_pages() {
 		'icon_url'   => 'dashicons-money-alt',
 		'position'   => 21,
 	) );
-	acf_add_options_page( array(
-		'page_title' => 'Paketten',
-		'menu_title' => 'Paketten',
-		'menu_slug'  => 'fbf-paketten',
-		'capability' => 'edit_theme_options',
-		'icon_url'   => 'dashicons-grid-view',
-		'position'   => 22,
-	) );
 }
 add_action( 'acf/init', 'fbf_acf_options_pages', 5 );
-
-/**
- * Custom Post Type: Case study / prijsopgaves
- * WordPress admin: handmatig menu-item via admin_menu.
- */
-function fbf_register_case_study_cpt() {
-	$labels = array(
-		'name'               => 'Case studies',
-		'singular_name'      => 'Case study',
-		'menu_name'          => 'Case studies',
-		'add_new'            => 'Nieuwe case study',
-		'add_new_item'       => 'Nieuwe case study toevoegen',
-		'edit_item'          => 'Case study bewerken',
-		'new_item'           => 'Nieuwe case study',
-		'view_item'          => 'Case study bekijken',
-		'all_items'          => 'Alle case studies',
-		'search_items'       => 'Case studies zoeken',
-		'not_found'          => 'Geen case studies gevonden',
-		'not_found_in_trash' => 'Geen case studies in de prullenbak',
-	);
-
-	register_post_type( 'case_study', array(
-		'labels'            => $labels,
-		'public'            => true,
-		'show_ui'           => true,
-		'show_in_menu'      => false,
-		'show_in_nav_menus' => true,
-		'show_in_rest'      => true,
-		'has_archive'       => true,
-		'menu_icon'         => 'dashicons-portfolio',
-		'menu_position'     => 20,
-		'supports'          => array( 'title', 'editor', 'thumbnail' ),
-		'rewrite'           => array( 'slug' => 'case-studies' ),
-		'capability_type'   => 'post',
-	) );
-}
-add_action( 'init', 'fbf_register_case_study_cpt' );
-
-function fbf_render_case_study_admin_redirect() {
-	if ( ! current_user_can( 'edit_posts' ) ) {
-		wp_die( __( 'Je hebt geen toegang tot deze pagina.' ) );
-	}
-
-	wp_safe_redirect( admin_url( 'edit.php?post_type=case_study' ) );
-	exit;
-}
-
-function fbf_case_study_admin_menu() {
-	$capability = 'edit_posts';
-	$menu_slug  = 'fbf-case-studies';
-
-	add_menu_page(
-		'Prijsopgaves',
-		'Prijsopgaves',
-		$capability,
-		$menu_slug,
-		'fbf_render_case_study_admin_redirect',
-		'dashicons-money-alt',
-		21
-	);
-
-	add_submenu_page(
-		$menu_slug,
-		'Alle prijsopgaves',
-		'Alle prijsopgaves',
-		$capability,
-		'edit.php?post_type=case_study'
-	);
-
-	add_submenu_page(
-		$menu_slug,
-		'Nieuwe prijsopgave',
-		'Nieuwe prijsopgave',
-		$capability,
-		'post-new.php?post_type=case_study'
-	);
-}
-add_action( 'admin_menu', 'fbf_case_study_admin_menu' );
 
 /**
  * ACF-veldgroepen automatisch registreren via code ("Local JSON"-methode).
@@ -278,60 +212,27 @@ add_action( 'admin_post_fbf_contact', 'fbf_process_contact_form' );
 add_action( 'admin_post_nopriv_fbf_contact', 'fbf_process_contact_form' );
 
 function fitbyfloran_maintenance_mode() {
+	if ( ! FBF_MAINTENANCE || is_admin() || current_user_can( 'manage_options' ) ) {
+		return;
+	}
 
-    // Admins kunnen de normale website bekijken
-    if ( current_user_can('manage_options') ) {
-        return;
-    }
+	// 503 + Retry-After: zoekmachines weten zo dat de site tijdelijk niet beschikbaar is.
+	status_header( 503 );
+	header( 'Retry-After: 3600' );
+	nocache_headers();
 
-    // Geen maintenance tonen in de WordPress admin
-    if ( is_admin() ) {
-        return;
-    }
-
-    // Maintenance pagina laden
-    include get_template_directory() . '/maintenance.php';
-
-    exit;
+	include get_template_directory() . '/maintenance.php';
+	exit;
 }
-
-add_action('template_redirect', 'fitbyfloran_maintenance_mode');
+add_action( 'template_redirect', 'fitbyfloran_maintenance_mode' );
 
 /**
  * Fit by Floran - Custom WordPress Login
  */
 
 function fitbyfloran_get_login_logo() {
-
-    $logo_dir = get_stylesheet_directory() . '/assets/images/';
-    $logo_url = get_stylesheet_directory_uri() . '/assets/images/';
-
-    /*
-     * Voorkeur:
-     * 1. SVG
-     * 2. PNG
-     * 3. JPG
-     */
-
-    $possible_logos = array(
-        'logo.svg',
-        'Logo.svg',
-        'logo.png',
-        'Logo.png',
-        'logo.jpg',
-        'Logo.jpg',
-    );
-
-    foreach ( $possible_logos as $logo ) {
-
-        if ( file_exists( $logo_dir . $logo ) ) {
-            return $logo_url . $logo;
-        }
-    }
-
-    return '';
+	return get_template_directory_uri() . '/assets/images/logo.svg';
 }
-
 
 function fitbyfloran_custom_login_styles() {
 
@@ -379,9 +280,7 @@ function fitbyfloran_custom_login_styles() {
 
         .login h1 a {
 
-            <?php if ( $logo_url ) : ?>
             background-image: url('<?php echo esc_url( $logo_url ); ?>') !important;
-            <?php endif; ?>
 
             background-size: contain !important;
             background-repeat: no-repeat !important;

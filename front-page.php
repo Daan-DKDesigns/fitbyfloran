@@ -5,20 +5,34 @@
  * "Over Floran"-blok (titel/ondertitel/knop), "Van analyse..." (titel + 4 kaarten),
  * en de prijsopgaves (los menu-item "Prijsopgaves" in het WP-admin).
  * Specialisaties, samenwerkingen en socials zijn via ACF beheerbaar.
+ * Lege fotovelden vallen terug op de foto's in assets/images/.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 get_header();
 
 $fbf_hero_image = function_exists( 'get_field' ) ? get_field( 'hero_achtergrond' ) : false;
-$fbf_hero_style = '';
-if ( $fbf_hero_image && ! empty( $fbf_hero_image['url'] ) ) {
-	$fbf_hero_style = ' style="background-image:linear-gradient(90deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.76) 38%,rgba(0,0,0,.18) 100%),url(' . esc_url( $fbf_hero_image['url'] ) . ');"';
-}
 
 $fbf_about_img1 = function_exists( 'get_field' ) ? get_field( 'about_afbeelding_1' ) : false;
 $fbf_about_img2 = function_exists( 'get_field' ) ? get_field( 'about_afbeelding_2' ) : false;
 $fbf_second_img = function_exists( 'get_field' ) ? get_field( 'tweede_sectie_afbeelding' ) : false;
+
+// Zolang een fotoveld in ACF leeg is, valt het thema terug op de meegeleverde foto's.
+$fbf_img_dir = get_template_directory_uri() . '/assets/images/';
+if ( empty( $fbf_hero_image['url'] ) ) {
+	$fbf_hero_image = array( 'url' => $fbf_img_dir . 'header-afbeelding.jpg' );
+}
+if ( empty( $fbf_about_img1['url'] ) ) {
+	$fbf_about_img1 = array( 'url' => $fbf_img_dir . 'floran.jpg', 'alt' => 'Floran' );
+}
+if ( empty( $fbf_about_img2['url'] ) ) {
+	$fbf_about_img2 = array( 'url' => $fbf_img_dir . 'floran-op-het-veld.jpg', 'alt' => 'Floran op het veld' );
+}
+if ( empty( $fbf_second_img['url'] ) ) {
+	$fbf_second_img = array( 'url' => $fbf_img_dir . 'lang-het-veld.jpg', 'alt' => 'Floran langs het veld' );
+}
+
+$fbf_hero_style = ' style="background-image:linear-gradient(90deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.76) 38%,rgba(0,0,0,.18) 100%),url(' . esc_url( $fbf_hero_image['url'] ) . ');"';
 
 $fbf_prijzen = function_exists( 'get_field' ) ? get_field( 'prijsopgaves', 'option' ) : false;
 if ( ! $fbf_prijzen ) {
@@ -145,16 +159,8 @@ $fbf_wa_url         = fbf_whatsapp_url();
 <section id="over">
   <div class="container about">
     <div class="about-images">
-      <?php if ( $fbf_about_img1 && ! empty( $fbf_about_img1['url'] ) ) : ?>
-        <img src="<?php echo esc_url( $fbf_about_img1['url'] ); ?>" alt="<?php echo esc_attr( $fbf_about_img1['alt'] ?: 'Floran' ); ?>">
-      <?php else : ?>
-        <div class="img-ph">Foto (via ACF: About afbeelding 1)</div>
-      <?php endif; ?>
-      <?php if ( $fbf_about_img2 && ! empty( $fbf_about_img2['url'] ) ) : ?>
-        <img src="<?php echo esc_url( $fbf_about_img2['url'] ); ?>" alt="<?php echo esc_attr( $fbf_about_img2['alt'] ?: 'Floran' ); ?>">
-      <?php else : ?>
-        <div class="img-ph">Foto (via ACF: About afbeelding 2)</div>
-      <?php endif; ?>
+      <img src="<?php echo esc_url( $fbf_about_img1['url'] ); ?>" alt="<?php echo esc_attr( ! empty( $fbf_about_img1['alt'] ) ? $fbf_about_img1['alt'] : 'Floran' ); ?>">
+      <img src="<?php echo esc_url( $fbf_about_img2['url'] ); ?>" alt="<?php echo esc_attr( ! empty( $fbf_about_img2['alt'] ) ? $fbf_about_img2['alt'] : 'Floran' ); ?>">
     </div>
     <div class="copy">
       <div class="kicker"><?php echo esc_html( fbf_field( 'about_kicker', 'Over Floran' ) ); ?></div>
@@ -217,7 +223,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
         <div class="from"><?php echo esc_html( $fbf_dienst['vanaf_label'] ); ?></div>
         <div class="price"><?php echo esc_html( $fbf_dienst['prijs'] ); ?><?php if ( ! empty( $fbf_dienst['prijs_periode'] ) ) : ?> <span class="per"><?php echo esc_html( $fbf_dienst['prijs_periode'] ); ?></span><?php endif; ?></div>
         <ul>
-          <?php foreach ( (array) $fbf_dienst['features'] as $fbf_feature ) : ?>
+          <?php foreach ( ! empty( $fbf_dienst['features'] ) ? $fbf_dienst['features'] : array() as $fbf_feature ) : ?>
             <li><?php echo esc_html( $fbf_feature['regel'] ); ?></li>
           <?php endforeach; ?>
         </ul>
@@ -228,7 +234,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
   </div>
 </section>
 
-<section id="specialisaties" style="padding-top:25px">
+<section id="specialisaties" class="section-tight">
   <div class="container">
     <div class="kicker"><?php echo esc_html( fbf_field( 'special_kicker', 'Specialistische begeleiding' ) ); ?></div>
     <h2><?php echo esc_html( fbf_field( 'special_titel', 'Gericht advies wanneer jij het nodig hebt.' ) ); ?></h2>
@@ -253,11 +259,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
       <h2>Van herstel naar volledige performance.</h2>
       <p class="lead">Of je nu op nationaal of internationaal niveau actief bent, een ambitieuze recreatieve sporter bent of behoefte hebt aan een onafhankelijke second opinion: de begeleiding wordt afgestemd op jouw situatie, sport en ambitie.</p>
     </div>
-    <?php if ( $fbf_second_img && ! empty( $fbf_second_img['url'] ) ) : ?>
-      <img src="<?php echo esc_url( $fbf_second_img['url'] ); ?>" alt="<?php echo esc_attr( $fbf_second_img['alt'] ?: 'Fit by Floran' ); ?>">
-    <?php else : ?>
-      <div class="img-ph" style="height:500px;">Foto (via ACF: Tweede-sectie afbeelding)</div>
-    <?php endif; ?>
+    <img src="<?php echo esc_url( $fbf_second_img['url'] ); ?>" alt="<?php echo esc_attr( ! empty( $fbf_second_img['alt'] ) ? $fbf_second_img['alt'] : 'Fit by Floran' ); ?>">
   </div>
 </section>
 
