@@ -3,7 +3,7 @@
  * Voorpagina — hero t/m contact.
  * ACF-beheerbaar (per klantwens): hero (titel/onderschrift/knoppen), het
  * "Over Floran"-blok (titel/ondertitel/knop), "Van analyse..." (titel + 4 kaarten),
- * en de prijsopgaves (los menu-item "Prijsopgaves" in het WP-admin).
+ * en de prijsopgaves (los menu-item "Prijsopgaves" in het WP-admin, één item per pakket).
  * Specialisaties, samenwerkingen en socials zijn via ACF beheerbaar.
  * Lege fotovelden vallen terug op de foto's in assets/images/.
  */
@@ -34,72 +34,7 @@ if ( empty( $fbf_second_img['url'] ) ) {
 
 $fbf_hero_style = ' style="background-image:linear-gradient(90deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.76) 38%,rgba(0,0,0,.18) 100%),url(' . esc_url( $fbf_hero_image['url'] ) . ');"';
 
-$fbf_prijzen = function_exists( 'get_field' ) ? get_field( 'prijsopgaves', 'option' ) : false;
-if ( ! $fbf_prijzen ) {
-	$fbf_prijzen = array(
-		array(
-			'titel' => 'Recovery Program', 'beschrijving' => 'Voor sporters die willen herstellen én sterker terug willen keren.',
-			'vanaf_label' => 'Vanaf', 'prijs' => '€495', 'prijs_periode' => '',
-			'uitgelicht' => false, 'badge_tekst' => '',
-			'features' => array(
-				array( 'regel' => 'Uitgebreide intake & fysieke screening' ),
-				array( 'regel' => 'Persoonlijk behandelplan' ),
-				array( 'regel' => 'Individueel oefenprogramma' ),
-				array( 'regel' => 'Hands-on behandelingen' ),
-				array( 'regel' => 'Wekelijkse evaluaties' ),
-				array( 'regel' => 'WhatsApp-ondersteuning' ),
-				array( 'regel' => 'Return-to-Performance Assessment' ),
-				array( 'regel' => 'Eindrapport met advies' ),
-			),
-			'knop_tekst' => 'Meer informatie', 'knop_link' => '#contact',
-		),
-		array(
-			'titel' => 'Basic Performance Membership', 'beschrijving' => 'Structurele begeleiding voor ambitieuze sporters die continu willen blijven ontwikkelen.',
-			'vanaf_label' => 'Vanaf', 'prijs' => '€149', 'prijs_periode' => 'p.m.',
-			'uitgelicht' => false, 'badge_tekst' => '',
-			'features' => array(
-				array( 'regel' => '1 fysieke sessie per maand' ),
-				array( 'regel' => 'Persoonlijk trainingsprogramma' ),
-				array( 'regel' => 'Online check-in 1u per week' ),
-				array( 'regel' => 'Chatondersteuning 1u per week' ),
-				array( 'regel' => 'Belastingmanagement basis' ),
-			),
-			'knop_tekst' => 'Meer informatie', 'knop_link' => '#contact',
-		),
-		array(
-			'titel' => 'Plus Performance Membership', 'beschrijving' => 'Meer begeleiding, meer inzicht en meer ruimte voor structurele ontwikkeling.',
-			'vanaf_label' => 'Vanaf', 'prijs' => '€349', 'prijs_periode' => 'p.m.',
-			'uitgelicht' => false, 'badge_tekst' => '',
-			'features' => array(
-				array( 'regel' => '1 fysieke sessie per maand' ),
-				array( 'regel' => 'Trainingsprogramma maandelijks aanpasbaar' ),
-				array( 'regel' => 'Online check-in op werkdagen' ),
-				array( 'regel' => 'Chatondersteuning op werkdagen' ),
-				array( 'regel' => 'Belastingmanagement plus' ),
-				array( 'regel' => 'Voortgangsrapportages' ),
-				array( 'regel' => 'Toegang tot de community' ),
-			),
-			'knop_tekst' => 'Meer informatie', 'knop_link' => '#contact',
-		),
-		array(
-			'titel' => 'Premium High Performance Membership', 'beschrijving' => 'Exclusieve één-op-één begeleiding voor topsporters en atleten die niets aan het toeval overlaten.',
-			'vanaf_label' => 'Vanaf', 'prijs' => '€449', 'prijs_periode' => 'p.m.',
-			'uitgelicht' => true, 'badge_tekst' => 'HIGH PERFORMANCE',
-			'features' => array(
-				array( 'regel' => '2 fysieke sessies per maand' ),
-				array( 'regel' => 'Prioriteit bij afspraken' ),
-				array( 'regel' => 'Persoonlijk trainingsprogramma onbeperkt' ),
-				array( 'regel' => 'Personal Performance Decision System' ),
-				array( 'regel' => 'Onbeperkte WhatsApp-support' ),
-				array( 'regel' => "Analyse van trainings- en wedstrijdvideo's" ),
-				array( 'regel' => 'Wedstrijd- en weekplanning' ),
-				array( 'regel' => 'Toegang tot de community' ),
-				array( 'regel' => 'Uitgebreide eindrapportages' ),
-			),
-			'knop_tekst' => 'Plan je intake', 'knop_link' => '#contact',
-		),
-	);
-}
+$fbf_prijzen = fbf_get_prijsopgaves();
 
 $fbf_specials = function_exists( 'get_field' ) ? get_field( 'specialisaties' ) : false;
 if ( ! $fbf_specials ) {
@@ -210,6 +145,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
     <div class="kicker"><?php echo esc_html( fbf_field( 'diensten_kicker', 'Trajecten & memberships' ) ); ?></div>
     <h2><?php echo esc_html( fbf_field( 'diensten_titel', 'Kies de begeleiding die bij jouw ambitie past.' ) ); ?></h2>
     <p class="lead"><?php echo esc_html( fbf_field( 'diensten_intro', 'Van gericht herstel tot intensieve één-op-één performancebegeleiding. Vier niveaus, één uitgangspunt: duurzaam beter presteren.' ) ); ?></p>
+    <?php if ( $fbf_prijzen ) : ?>
     <div class="services">
       <?php foreach ( $fbf_prijzen as $fbf_dienst ) :
         $fbf_featured = ! empty( $fbf_dienst['uitgelicht'] );
@@ -223,14 +159,17 @@ $fbf_wa_url         = fbf_whatsapp_url();
         <div class="from"><?php echo esc_html( $fbf_dienst['vanaf_label'] ); ?></div>
         <div class="price"><?php echo esc_html( $fbf_dienst['prijs'] ); ?><?php if ( ! empty( $fbf_dienst['prijs_periode'] ) ) : ?> <span class="per"><?php echo esc_html( $fbf_dienst['prijs_periode'] ); ?></span><?php endif; ?></div>
         <ul>
-          <?php foreach ( ! empty( $fbf_dienst['features'] ) ? $fbf_dienst['features'] : array() as $fbf_feature ) : ?>
-            <li><?php echo esc_html( $fbf_feature['regel'] ); ?></li>
+          <?php foreach ( $fbf_dienst['kenmerken'] as $fbf_kenmerk ) : ?>
+            <li><?php echo esc_html( $fbf_kenmerk ); ?></li>
           <?php endforeach; ?>
         </ul>
-        <a class="btn <?php echo $fbf_featured ? 'btn-gold' : 'btn-outline'; ?>" href="<?php echo esc_url( $fbf_dienst['knop_link'] ); ?>"><?php echo esc_html( $fbf_dienst['knop_tekst'] ); ?></a>
+        <?php if ( $fbf_dienst['knop_tekst'] !== '' ) : ?>
+          <a class="btn <?php echo $fbf_featured ? 'btn-gold' : 'btn-outline'; ?>" href="<?php echo esc_url( $fbf_dienst['knop_link'] ?: '#contact' ); ?>"><?php echo esc_html( $fbf_dienst['knop_tekst'] ); ?></a>
+        <?php endif; ?>
       </article>
       <?php endforeach; ?>
     </div>
+    <?php endif; ?>
   </div>
 </section>
 

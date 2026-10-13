@@ -56,10 +56,7 @@ function fbf_field( $selector, $default = '', $post_id = false ) {
 }
 
 /**
- * ACF Options-pagina's registreren:
- * - "Site-instellingen": WhatsApp/contact
- * - "Prijsopgaves": eigen menukopje links in het WP-admin, los van de paginacontent,
- *   met de volledige lijst trajecten/memberships die op de website getoond worden.
+ * ACF Options-pagina "Site-instellingen" (WhatsApp/contact), eigen kopje "Fit by Floran".
  */
 function fbf_acf_options_pages() {
 	if ( ! function_exists( 'acf_add_options_page' ) ) {
@@ -71,16 +68,195 @@ function fbf_acf_options_pages() {
 		'menu_slug'  => 'fbf-options',
 		'capability' => 'edit_theme_options',
 	) );
-	acf_add_options_page( array(
-		'page_title' => 'Prijsopgaves',
-		'menu_title' => 'Prijsopgaves',
-		'menu_slug'  => 'fbf-prijsopgaves',
-		'capability' => 'edit_theme_options',
-		'icon_url'   => 'dashicons-money-alt',
-		'position'   => 21,
-	) );
 }
 add_action( 'acf/init', 'fbf_acf_options_pages', 5 );
+
+/**
+ * Prijsopgaves: eigen menu-item in het WP-admin. Elk pakket (traject/membership) is
+ * een los item met titel, prijs en inhoud, en verschijnt als prijskaart in de sectie
+ * "Diensten" op de voorpagina. De volgorde stel je in via "Volgorde" bij het item.
+ */
+function fbf_register_prijsopgave_cpt() {
+	register_post_type( 'prijsopgave', array(
+		'labels'              => array(
+			'name'               => 'Prijsopgaves',
+			'singular_name'      => 'Prijsopgave',
+			'menu_name'          => 'Prijsopgaves',
+			'add_new'            => 'Nieuwe prijsopgave',
+			'add_new_item'       => 'Nieuwe prijsopgave toevoegen',
+			'edit_item'          => 'Prijsopgave bewerken',
+			'new_item'           => 'Nieuwe prijsopgave',
+			'all_items'          => 'Alle prijsopgaves',
+			'search_items'       => 'Prijsopgaves zoeken',
+			'not_found'          => 'Geen prijsopgaves gevonden',
+			'not_found_in_trash' => 'Geen prijsopgaves in de prullenbak',
+		),
+		'public'              => false,
+		'show_ui'             => true,
+		'show_in_menu'        => true,
+		'show_in_nav_menus'   => false,
+		'show_in_rest'        => false,
+		'exclude_from_search' => true,
+		'has_archive'         => false,
+		'rewrite'             => false,
+		'menu_icon'           => 'dashicons-money-alt',
+		'menu_position'       => 21,
+		'supports'            => array( 'title', 'page-attributes' ),
+		'capability_type'     => 'page',
+	) );
+}
+add_action( 'init', 'fbf_register_prijsopgave_cpt' );
+
+/** Titelveld in het admin: "Naam van het pakket". */
+function fbf_prijsopgave_title_placeholder( $title, $post ) {
+	return 'prijsopgave' === $post->post_type ? 'Naam van het pakket, bijv. Recovery Program' : $title;
+}
+add_filter( 'enter_title_here', 'fbf_prijsopgave_title_placeholder', 10, 2 );
+
+/** Overzicht in het admin: prijs en uitgelicht naast de titel, gesorteerd op volgorde. */
+function fbf_prijsopgave_columns( $columns ) {
+	return array(
+		'cb'               => $columns['cb'],
+		'title'            => 'Pakket',
+		'fbf_prijs'        => 'Prijs',
+		'fbf_uitgelicht'   => 'Uitgelicht',
+		'fbf_volgorde'     => 'Volgorde',
+	);
+}
+add_filter( 'manage_prijsopgave_posts_columns', 'fbf_prijsopgave_columns' );
+
+function fbf_prijsopgave_column_content( $column, $post_id ) {
+	if ( 'fbf_prijs' === $column ) {
+		echo esc_html( trim( get_post_meta( $post_id, 'prijs', true ) . ' ' . get_post_meta( $post_id, 'prijs_periode', true ) ) );
+	} elseif ( 'fbf_uitgelicht' === $column ) {
+		echo get_post_meta( $post_id, 'uitgelicht', true ) ? '&#9733;' : '&ndash;';
+	} elseif ( 'fbf_volgorde' === $column ) {
+		echo esc_html( (string) get_post_field( 'menu_order', $post_id ) );
+	}
+}
+add_action( 'manage_prijsopgave_posts_custom_column', 'fbf_prijsopgave_column_content', 10, 2 );
+
+function fbf_prijsopgave_admin_order( $query ) {
+	if ( is_admin() && $query->is_main_query() && 'prijsopgave' === $query->get( 'post_type' ) && ! $query->get( 'orderby' ) ) {
+		$query->set( 'orderby', array( 'menu_order' => 'ASC', 'title' => 'ASC' ) );
+	}
+}
+add_action( 'pre_get_posts', 'fbf_prijsopgave_admin_order' );
+
+/**
+ * Alle gepubliceerde prijsopgaves, klaar voor de voorpagina.
+ * Leest gewone post-meta, dus werkt ook als ACF (tijdelijk) niet actief is.
+ */
+function fbf_get_prijsopgaves() {
+	$posts = get_posts( array(
+		'post_type'      => 'prijsopgave',
+		'post_status'    => 'publish',
+		'posts_per_page' => -1,
+		'orderby'        => array( 'menu_order' => 'ASC', 'title' => 'ASC' ),
+	) );
+
+	$items = array();
+	foreach ( $posts as $post ) {
+		$kenmerken = preg_split( '/\r\n|\r|\n/', (string) get_post_meta( $post->ID, 'kenmerken', true ) );
+		$items[]   = array(
+			'titel'         => get_the_title( $post ),
+			'beschrijving'  => (string) get_post_meta( $post->ID, 'beschrijving', true ),
+			'vanaf_label'   => (string) get_post_meta( $post->ID, 'vanaf_label', true ),
+			'prijs'         => (string) get_post_meta( $post->ID, 'prijs', true ),
+			'prijs_periode' => (string) get_post_meta( $post->ID, 'prijs_periode', true ),
+			'kenmerken'     => array_values( array_filter( array_map( 'trim', $kenmerken ), 'strlen' ) ),
+			'uitgelicht'    => (bool) get_post_meta( $post->ID, 'uitgelicht', true ),
+			'badge_tekst'   => (string) get_post_meta( $post->ID, 'badge_tekst', true ),
+			'knop_tekst'    => (string) get_post_meta( $post->ID, 'knop_tekst', true ),
+			'knop_link'     => (string) get_post_meta( $post->ID, 'knop_link', true ),
+		);
+	}
+	return $items;
+}
+
+/** De vier pakketten uit de goedgekeurde demo, als startinhoud voor het admin. */
+function fbf_default_prijsopgaves() {
+	return array(
+		array(
+			'titel' => 'Recovery Program', 'beschrijving' => 'Voor sporters die willen herstellen én sterker terug willen keren.',
+			'prijs' => '€495', 'prijs_periode' => '', 'uitgelicht' => 0, 'badge_tekst' => '', 'knop_tekst' => 'Meer informatie',
+			'kenmerken' => array( 'Uitgebreide intake & fysieke screening', 'Persoonlijk behandelplan', 'Individueel oefenprogramma', 'Hands-on behandelingen', 'Wekelijkse evaluaties', 'WhatsApp-ondersteuning', 'Return-to-Performance Assessment', 'Eindrapport met advies' ),
+		),
+		array(
+			'titel' => 'Basic Performance Membership', 'beschrijving' => 'Structurele begeleiding voor ambitieuze sporters die continu willen blijven ontwikkelen.',
+			'prijs' => '€149', 'prijs_periode' => 'p.m.', 'uitgelicht' => 0, 'badge_tekst' => '', 'knop_tekst' => 'Meer informatie',
+			'kenmerken' => array( '1 fysieke sessie per maand', 'Persoonlijk trainingsprogramma', 'Online check-in 1u per week', 'Chatondersteuning 1u per week', 'Belastingmanagement basis' ),
+		),
+		array(
+			'titel' => 'Plus Performance Membership', 'beschrijving' => 'Meer begeleiding, meer inzicht en meer ruimte voor structurele ontwikkeling.',
+			'prijs' => '€349', 'prijs_periode' => 'p.m.', 'uitgelicht' => 0, 'badge_tekst' => '', 'knop_tekst' => 'Meer informatie',
+			'kenmerken' => array( '1 fysieke sessie per maand', 'Trainingsprogramma maandelijks aanpasbaar', 'Online check-in op werkdagen', 'Chatondersteuning op werkdagen', 'Belastingmanagement plus', 'Voortgangsrapportages', 'Toegang tot de community' ),
+		),
+		array(
+			'titel' => 'Premium High Performance Membership', 'beschrijving' => 'Exclusieve één-op-één begeleiding voor topsporters en atleten die niets aan het toeval overlaten.',
+			'prijs' => '€449', 'prijs_periode' => 'p.m.', 'uitgelicht' => 1, 'badge_tekst' => 'HIGH PERFORMANCE', 'knop_tekst' => 'Plan je intake',
+			'kenmerken' => array( '2 fysieke sessies per maand', 'Prioriteit bij afspraken', 'Persoonlijk trainingsprogramma onbeperkt', 'Personal Performance Decision System', 'Onbeperkte WhatsApp-support', "Analyse van trainings- en wedstrijdvideo's", 'Wedstrijd- en weekplanning', 'Toegang tot de community', 'Uitgebreide eindrapportages' ),
+		),
+	);
+}
+
+/** Voegt de ACF-veldverwijzingen toe (_veldnaam => veldsleutel), zoals ACF zelf ook opslaat. */
+function fbf_prijsopgave_meta( $values ) {
+	$keys = array(
+		'beschrijving'  => 'field_fbf_prijs_beschrijving',
+		'vanaf_label'   => 'field_fbf_prijs_vanaf_label',
+		'prijs'         => 'field_fbf_prijs_prijs',
+		'prijs_periode' => 'field_fbf_prijs_periode',
+		'kenmerken'     => 'field_fbf_prijs_kenmerken',
+		'uitgelicht'    => 'field_fbf_prijs_uitgelicht',
+		'badge_tekst'   => 'field_fbf_prijs_badge_tekst',
+		'knop_tekst'    => 'field_fbf_prijs_knop_tekst',
+		'knop_link'     => 'field_fbf_prijs_knop_link',
+	);
+	foreach ( $keys as $name => $key ) {
+		if ( array_key_exists( $name, $values ) ) {
+			$values[ '_' . $name ] = $key;
+		}
+	}
+	return $values;
+}
+
+/**
+ * Eenmalig: maak de vier demo-pakketten aan als prijsopgave-items, zodat de klant ze
+ * direct kan aanpassen. Gebeurt alleen als er nog geen enkele prijsopgave bestaat.
+ */
+function fbf_seed_prijsopgaves() {
+	if ( get_option( 'fbf_prijsopgaves_seeded' ) || ! current_user_can( 'edit_pages' ) ) {
+		return;
+	}
+	update_option( 'fbf_prijsopgaves_seeded', 1, false );
+
+	$bestaand = get_posts( array( 'post_type' => 'prijsopgave', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids' ) );
+	if ( $bestaand ) {
+		return;
+	}
+
+	foreach ( fbf_default_prijsopgaves() as $volgorde => $pakket ) {
+		wp_insert_post( array(
+			'post_type'   => 'prijsopgave',
+			'post_status' => 'publish',
+			'post_title'  => $pakket['titel'],
+			'menu_order'  => $volgorde + 1,
+			'meta_input'  => fbf_prijsopgave_meta( array(
+				'beschrijving'  => $pakket['beschrijving'],
+				'vanaf_label'   => 'Vanaf',
+				'prijs'         => $pakket['prijs'],
+				'prijs_periode' => $pakket['prijs_periode'],
+				'kenmerken'     => implode( "\n", $pakket['kenmerken'] ),
+				'uitgelicht'    => $pakket['uitgelicht'],
+				'badge_tekst'   => $pakket['badge_tekst'],
+				'knop_tekst'    => $pakket['knop_tekst'],
+				'knop_link'     => '#contact',
+			) ),
+		) );
+	}
+}
+add_action( 'admin_init', 'fbf_seed_prijsopgaves' );
 
 /**
  * ACF-veldgroepen automatisch registreren via code ("Local JSON"-methode).

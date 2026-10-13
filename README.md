@@ -9,9 +9,9 @@ Kleuren, typografie en indeling zijn overgenomen; de tekst en de prijsopgaves zi
    (of upload de zip direct via **Weergave → Thema's → Nieuwe toevoegen → Thema uploaden**).
 2. Activeer het thema onder **Weergave → Thema's**.
 3. Installeer **Advanced Custom Fields (ACF)** — een gele melding in het admin herinnert je hieraan
-   zolang de plugin nog niet actief is. ACF Pro is nodig voor de twee Opties-pagina's
-   (Site-instellingen en Prijsopgaves); zonder Pro werkt de site nog steeds, maar zijn die twee
-   niet aan te passen via het admin.
+   zolang de plugin nog niet actief is. ACF Pro is nodig voor de Opties-pagina
+   Site-instellingen en voor de herhaalvelden (repeaters) op de voorpagina; zonder Pro werkt de site
+   nog steeds, maar zijn die niet aan te passen via het admin. Prijsopgaves werken ook met gratis ACF.
 4. Ga naar **Instellingen → Lezen** en zet "Homepage toont" op een statische pagina, met die pagina
    als voorpagina. De ACF-velden voor hero/about/aanpak verschijnen pas zodra dat is ingesteld.
 5. Ga naar **Weergave → Aanpassen → Site-identiteit** en upload het logo van Floran (wordt gebruikt
@@ -57,10 +57,16 @@ Maak je nog geen menu aan, dan toont het thema automatisch dezelfde 7 links als 
 - Sectiekoppen van de dienstensectie (label/titel/introtekst) en de foto in de "Van herstel naar
   volledige performance"-sectie
 
-**Los menu-item "Prijsopgaves"** (links in het WP-admin, eigen kopje):
-- Alle trajecten/memberships compleet in te vullen: titel, beschrijving, prijs, periode-aanduiding,
-  een lijst met kenmerken, of het traject uitgelicht moet worden (gouden rand + badge), en de
-  knoptekst/link. Voeg of verwijder trajecten vrij - de website past zich automatisch aan.
+**Menu-item "Prijsopgaves"** (links in het WP-admin, eigen kopje):
+- Elk pakket (traject of membership) is een eigen item. Via **Prijsopgaves → Nieuwe prijsopgave**
+  voegt de klant een pakket toe met: naam, korte beschrijving, prijs, periode-aanduiding (bijv. p.m.),
+  wat er in het pakket zit (één kenmerk per regel), of het pakket uitgelicht moet worden (gouden
+  rand + badge), en de knoptekst/link.
+- De volgorde op de website stel je in met het veld **Volgorde** (rechts bij het item, laagste eerst).
+- Een pakket tijdelijk verbergen: zet het op **Concept**. Verwijderen kan via de prullenbak.
+- Bij het eerste bezoek aan het admin worden de vier pakketten uit de demo automatisch als items
+  aangemaakt, zodat ze direct aan te passen zijn.
+- Werkt met de gratis versie van ACF; de prijskaarten blijven zichtbaar als ACF even uit staat.
 
 **Site-instellingen** (eigen kopje "Fit by Floran"):
 - WhatsApp-nummer en voorinvultekst, contact-e-mailadres en telefoonnummer voor weergave.
