@@ -71,6 +71,84 @@ function fbf_acf_options_pages() {
 add_action( 'acf/init', 'fbf_acf_options_pages', 5 );
 
 /**
+ * Custom Post Type: Case study / prijsopgaves
+ * WordPress admin: handmatig menu-item via admin_menu.
+ */
+function fbf_register_case_study_cpt() {
+	$labels = array(
+		'name'               => 'Case studies',
+		'singular_name'      => 'Case study',
+		'menu_name'          => 'Case studies',
+		'add_new'            => 'Nieuwe case study',
+		'add_new_item'       => 'Nieuwe case study toevoegen',
+		'edit_item'          => 'Case study bewerken',
+		'new_item'           => 'Nieuwe case study',
+		'view_item'          => 'Case study bekijken',
+		'all_items'          => 'Alle case studies',
+		'search_items'       => 'Case studies zoeken',
+		'not_found'          => 'Geen case studies gevonden',
+		'not_found_in_trash' => 'Geen case studies in de prullenbak',
+	);
+
+	register_post_type( 'case_study', array(
+		'labels'            => $labels,
+		'public'            => true,
+		'show_ui'           => true,
+		'show_in_menu'      => false,
+		'show_in_nav_menus' => true,
+		'show_in_rest'      => true,
+		'has_archive'       => true,
+		'menu_icon'         => 'dashicons-portfolio',
+		'menu_position'     => 20,
+		'supports'          => array( 'title', 'editor', 'thumbnail' ),
+		'rewrite'           => array( 'slug' => 'case-studies' ),
+		'capability_type'   => 'post',
+	) );
+}
+add_action( 'init', 'fbf_register_case_study_cpt' );
+
+function fbf_render_case_study_admin_redirect() {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		wp_die( __( 'Je hebt geen toegang tot deze pagina.' ) );
+	}
+
+	wp_safe_redirect( admin_url( 'edit.php?post_type=case_study' ) );
+	exit;
+}
+
+function fbf_case_study_admin_menu() {
+	$capability = 'edit_posts';
+	$menu_slug  = 'fbf-case-studies';
+
+	add_menu_page(
+		'Prijsopgaves',
+		'Prijsopgaves',
+		$capability,
+		$menu_slug,
+		'fbf_render_case_study_admin_redirect',
+		'dashicons-money-alt',
+		21
+	);
+
+	add_submenu_page(
+		$menu_slug,
+		'Alle prijsopgaves',
+		'Alle prijsopgaves',
+		$capability,
+		'edit.php?post_type=case_study'
+	);
+
+	add_submenu_page(
+		$menu_slug,
+		'Nieuwe prijsopgave',
+		'Nieuwe prijsopgave',
+		$capability,
+		'post-new.php?post_type=case_study'
+	);
+}
+add_action( 'admin_menu', 'fbf_case_study_admin_menu' );
+
+/**
  * ACF-veldgroepen automatisch registreren via code ("Local JSON"-methode).
  * Bewust niet via de handmatige import-knop: die is in recentere ACF-versies
  * (6.1+) kwetsbaar voor een fatale fout bij handmatig samengestelde JSON-bestanden.
@@ -106,8 +184,8 @@ function fbf_admin_notice_acf() {
 	$install_url = admin_url( 'plugin-install.php?s=Advanced+Custom+Fields&tab=search&type=term' );
 	?>
 	<div class="notice notice-warning is-dismissible">
-		<p><strong>Fit by Floran-thema:</strong> Aanbevolen plugin <strong>Advanced Custom Fields (ACF)</strong> is nog niet actief. Nodig om de hero, de teksten en de prijsopgaves te beheren via het W[...]
-		<a href="<?php echo esc_url( $install_url ); ?>">Plugin installeren / activeren</a></p>
+		<p><strong>Fit by Floran-thema:</strong> Aanbevolen plugin <strong>Advanced Custom Fields (ACF)</strong> is nog niet actief. Nodig om de hero, de teksten en de prijsopgaves te beheren via het WP-admin.</p>
+		<p><a href="<?php echo esc_url( $install_url ); ?>">Plugin installeren / activeren</a></p>
 	</div>
 	<?php
 }
