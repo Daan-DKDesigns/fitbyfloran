@@ -301,16 +301,34 @@ function fbf_admin_notice_acf() {
 }
 add_action( 'admin_notices', 'fbf_admin_notice_acf' );
 
+/**
+ * Ankerlinks (/#aanpak, /#diensten, ...) wijzen allemaal naar de voorpagina, waardoor
+ * WordPress ze allemaal als "huidige pagina" markeert en het hele menu goud kleurt.
+ */
+function fbf_nav_anchor_classes( $classes, $item ) {
+	if ( false !== strpos( (string) $item->url, '#' ) ) {
+		$classes = array_diff( $classes, array( 'current-menu-item', 'current_page_item' ) );
+	}
+	return $classes;
+}
+add_filter( 'nav_menu_css_class', 'fbf_nav_anchor_classes', 10, 2 );
+
+function fbf_nav_anchor_atts( $atts, $item ) {
+	if ( false !== strpos( (string) $item->url, '#' ) ) {
+		unset( $atts['aria-current'] );
+	}
+	return $atts;
+}
+add_filter( 'nav_menu_link_attributes', 'fbf_nav_anchor_atts', 10, 2 );
+
 /** Fallback hoofdmenu zolang er nog geen WP-menu is aangemaakt. */
 function fbf_default_menu( $args = array() ) {
 	$class = ! empty( $args['menu_class'] ) ? $args['menu_class'] : '';
 	$home  = esc_url( home_url( '/' ) );
 	echo '<ul' . ( $class ? ' class="' . esc_attr( $class ) . '"' : '' ) . '>
-		<li><a href="' . $home . '#over">Over Floran</a></li>
 		<li><a href="' . $home . '#aanpak">Aanpak</a></li>
 		<li><a href="' . $home . '#diensten">Diensten</a></li>
-		<li><a href="' . $home . '#specialisaties">Specialisaties</a></li>
-		<li><a href="' . $home . '#partners">Samenwerkingen</a></li>
+		<li><a href="' . $home . '#resultaten">Resultaten</a></li>
 		<li><a href="' . $home . '#contact">Contact</a></li>
 		<li><a href="' . $home . '#contact" class="nav-cta">Plan je intake</a></li>
 	</ul>';
@@ -380,7 +398,13 @@ function fbf_process_contact_form() {
 		'Reply-To: ' . $naam . ' <' . $email . '>',
 	);
 
+	// Afzendernaam "Fit by Floran" i.p.v. "WordPress"; het afzenderadres laat WordPress/SMTP-plugin ongemoeid.
+	$from_name = static function () {
+		return 'Fit by Floran';
+	};
+	add_filter( 'wp_mail_from_name', $from_name );
 	$sent = wp_mail( $to, $subject, $body, $headers );
+	remove_filter( 'wp_mail_from_name', $from_name );
 	wp_safe_redirect( $redirect . ( $sent ? '?contact=verzonden#contact' : '?contact=fout#contact' ) );
 	exit;
 }

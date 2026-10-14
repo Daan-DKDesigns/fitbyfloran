@@ -191,7 +191,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
   </div>
 </section>
 
-<section class="cream">
+<section id="resultaten" class="cream">
   <div class="container second">
     <div>
       <div class="kicker">Voor iedere fase</div>
@@ -245,13 +245,15 @@ $fbf_wa_url         = fbf_whatsapp_url();
         <label for="fbf_website">Website</label>
         <input type="text" name="fbf_website" id="fbf_website" tabindex="-1" autocomplete="off">
       </div>
-      <div class="contact-form__field">
-        <label for="fbf_naam">Naam</label>
-        <input type="text" id="fbf_naam" name="fbf_naam" required autocomplete="name">
-      </div>
-      <div class="contact-form__field">
-        <label for="fbf_email">E-mailadres</label>
-        <input type="email" id="fbf_email" name="fbf_email" required autocomplete="email">
+      <div class="contact-form__row">
+        <div class="contact-form__field">
+          <label for="fbf_naam">Naam</label>
+          <input type="text" id="fbf_naam" name="fbf_naam" required autocomplete="name">
+        </div>
+        <div class="contact-form__field">
+          <label for="fbf_email">E-mailadres</label>
+          <input type="email" id="fbf_email" name="fbf_email" required autocomplete="email">
+        </div>
       </div>
       <div class="contact-form__field">
         <label for="fbf_telefoon">Telefoon <span>(optioneel)</span></label>
