@@ -241,6 +241,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
     <form class="contact-form contact-form--dark" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
       <input type="hidden" name="action" value="fbf_contact">
       <?php wp_nonce_field( 'fbf_contact', 'fbf_contact_nonce' ); ?>
+      <?php echo fbf_spam_token_field(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
       <div class="contact-form__honeypot" aria-hidden="true">
         <label for="fbf_website">Website</label>
         <input type="text" name="fbf_website" id="fbf_website" tabindex="-1" autocomplete="off">
