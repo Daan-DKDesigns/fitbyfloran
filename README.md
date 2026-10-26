@@ -84,6 +84,28 @@ Het loginscherm en de onderhoudspagina gebruiken `assets/images/logo.svg`. Het f
 `assets/images/favicon.svg`/`favicon.png`, tenzij er een site-icoon is ingesteld via
 **Weergave → Aanpassen → Site-identiteit**.
 
+## Vindbaarheid, beveiliging en spam
+
+**SEO** (`inc/seo.php`): beschrijving voor Google, deelvoorbeeld (Open Graph) en schema-data als
+fysiotherapiepraktijk met de trajecten en prijzen uit Prijsopgaves. Zoekpagina's en de melding na het
+formulier (`?contact=`) komen niet in Google; gebruikersnamen zijn niet op te vragen via `?author=` of
+de REST-API. Installeer je Yoast of Rank Math, dan neemt die de beschrijving en het deelvoorbeeld over.
+
+**AI-zoekmachines** (`inc/llms.php`): `/llms.txt` vat de praktijk, de aanpak en de trajecten samen en
+vult zichzelf uit de voorpagina en Prijsopgaves. `robots.txt` laat zoekmachines en AI-zoekrobots toe en
+werkt ook tijdens de onderhoudsmodus.
+
+**Beveiliging** (`inc/security.php`): beveiligingsheaders, geen PHP-versie in de headers, een
+inlogfout die niet verraadt of de gebruikersnaam bestaat, code bewerken in het beheer uit, XML-RPC en
+reacties uit.
+
+**Spam**: het contactformulier weigert stil (de bezoeker ziet "verzonden") als het verborgen veld is
+ingevuld, als het binnen 3 seconden na het laden is verstuurd, of als het bericht meer dan 3 links bevat.
+
+**Cloudflare** (buiten het thema): SSL Full (strict), Always Use HTTPS, minimaal TLS 1.2, HSTS 6 maanden
+(zonder subdomeinen/preload), `readme.html`, `license.txt` en `wp-config-sample.php` geblokkeerd, en
+`wp-login.php` afgeremd tot 5 verzoeken per 10 seconden per IP-adres.
+
 ## Bestandsstructuur
 
 ```
@@ -96,6 +118,9 @@ fitbyfloran/
 ├── footer.php                     → footer + WhatsApp-knop
 ├── front-page.php                 → hero t/m contact (homepage)
 ├── index.php / page.php           → fallback-templates
+├── inc/seo.php                    → beschrijving, deelvoorbeeld, schema-data, indexering, sitemap
+├── inc/llms.php                   → /llms.txt en robots.txt
+├── inc/security.php               → beveiligingsheaders, inloggen, reacties uit, spamcontrole
 ├── acf-fields-fitbyfloran.json    → alle ACF-velden, automatisch geregistreerd via code
 ├── assets/js/main.js              → hamburgermenu-logica
 └── assets/images/                 → logo's, favicon en standaardfoto's

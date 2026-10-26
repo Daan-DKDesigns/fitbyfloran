@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'FBF_VERSION', '1.2.0' );
+define( 'FBF_VERSION', '1.3.0' );
 
 /**
  * Onderhoudsmodus: bezoekers zien "Binnenkort live", ingelogde beheerders de echte site.
@@ -70,6 +70,11 @@ function fbf_acf_options_pages() {
 	) );
 }
 add_action( 'acf/init', 'fbf_acf_options_pages', 5 );
+
+require_once get_template_directory() . '/inc/content.php';
+require_once get_template_directory() . '/inc/security.php';
+require_once get_template_directory() . '/inc/seo.php';
+require_once get_template_directory() . '/inc/llms.php';
 
 /**
  * Prijsopgaves: eigen menu-item in het WP-admin. Elk pakket (traject/membership) is
@@ -373,8 +378,8 @@ function fbf_process_contact_form() {
 		exit;
 	}
 
-	$honeypot = isset( $_POST['fbf_website'] ) ? sanitize_text_field( wp_unslash( $_POST['fbf_website'] ) ) : '';
-	if ( $honeypot !== '' ) {
+	// Spam krijgt dezelfde "verzonden"-melding, zodat een robot niet leert wat er misging.
+	if ( fbf_is_spam() ) {
 		wp_safe_redirect( $redirect . '?contact=verzonden#contact' );
 		exit;
 	}
@@ -412,7 +417,8 @@ add_action( 'admin_post_fbf_contact', 'fbf_process_contact_form' );
 add_action( 'admin_post_nopriv_fbf_contact', 'fbf_process_contact_form' );
 
 function fitbyfloran_maintenance_mode() {
-	if ( ! FBF_MAINTENANCE || is_admin() || current_user_can( 'manage_options' ) ) {
+	// robots.txt en favicon.ico blijven bereikbaar, ook voor zoekmachines tijdens het onderhoud.
+	if ( ! FBF_MAINTENANCE || is_admin() || is_robots() || is_favicon() || current_user_can( 'manage_options' ) ) {
 		return;
 	}
 
