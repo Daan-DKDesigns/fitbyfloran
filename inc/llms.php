@@ -13,8 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /** De tekst van /llms.txt (Markdown, zie llmstxt.org). */
 function fbf_llms_txt() {
-	$front = (int) get_option( 'page_on_front' ) ?: false;
-	$acf   = function_exists( 'get_field' );
 	$lines = array( '# ' . get_bloginfo( 'name' ), '' );
 
 	$intro = fbf_seo_intro( 400 );
@@ -35,7 +33,7 @@ function fbf_llms_txt() {
 	}
 	$lines[] = '';
 
-	$about = fbf_field( 'about_tekst', '', $front );
+	$about = fbf_about_tekst();
 	if ( $about ) {
 		$lines[] = '## Over Floran';
 		$lines[] = '';
@@ -43,7 +41,7 @@ function fbf_llms_txt() {
 		$lines[] = '';
 	}
 
-	$stappen = $acf ? get_field( 'aanpak_stappen', $front ) : false;
+	$stappen = fbf_aanpak_stappen();
 	if ( is_array( $stappen ) && $stappen ) {
 		$lines[] = '## Aanpak';
 		$lines[] = '';
@@ -75,7 +73,7 @@ function fbf_llms_txt() {
 		$lines[] = '';
 	}
 
-	$specials = $acf ? get_field( 'specialisaties', $front ) : false;
+	$specials = fbf_specialisaties();
 	if ( is_array( $specials ) && $specials ) {
 		$lines[] = '## Specialisaties';
 		$lines[] = '';

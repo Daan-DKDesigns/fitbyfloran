@@ -37,6 +37,13 @@ add_filter( 'wp_is_application_passwords_available', '__return_false' );
 
 /** XML-RPC en pingbacks zijn niet nodig en worden vooral misbruikt. */
 add_filter( 'xmlrpc_enabled', '__return_false' );
+add_action( 'after_setup_theme', function () {
+	// WordPress biedt via xmlrpc.php altijd nog system.listMethods e.d. aan: het hele bestand dicht.
+	if ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) {
+		status_header( 403 );
+		exit;
+	}
+} );
 add_filter( 'wp_headers', function ( $headers ) {
 	unset( $headers['X-Pingback'] );
 	return $headers;

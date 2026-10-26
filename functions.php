@@ -71,6 +71,7 @@ function fbf_acf_options_pages() {
 }
 add_action( 'acf/init', 'fbf_acf_options_pages', 5 );
 
+require_once get_template_directory() . '/inc/content.php';
 require_once get_template_directory() . '/inc/security.php';
 require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/llms.php';

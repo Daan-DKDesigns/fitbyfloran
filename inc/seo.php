@@ -271,10 +271,7 @@ function fbf_schema_business() {
 	}
 
 	$knows    = array( 'Sportfysiotherapie', 'Blessureherstel', 'Blessurepreventie', 'Return-to-performance', 'Performancebegeleiding' );
-	$specials = function_exists( 'get_field' ) ? get_field( 'specialisaties', (int) get_option( 'page_on_front' ) ?: false ) : false;
-	if ( is_array( $specials ) ) {
-		$knows = array_merge( $knows, array_filter( wp_list_pluck( $specials, 'titel' ) ) );
-	}
+	$knows = array_merge( $knows, array_filter( wp_list_pluck( fbf_specialisaties(), 'titel' ) ) );
 	$biz['knowsAbout'] = array_values( array_unique( $knows ) );
 
 	return $biz;

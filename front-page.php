@@ -36,29 +36,7 @@ $fbf_hero_style = ' style="background-image:linear-gradient(90deg,rgba(0,0,0,.92
 
 $fbf_prijzen = fbf_get_prijsopgaves();
 
-$fbf_specials = function_exists( 'get_field' ) ? get_field( 'specialisaties' ) : false;
-if ( ! $fbf_specials ) {
-	$fbf_specials = array(
-		array(
-			'titel'      => 'Second Opinion',
-			'tekst'      => 'Twijfel je over een diagnose of behandelplan? We bekijken jouw situatie objectief en vertalen dit naar een helder advies.',
-			'knop_tekst' => 'Plan second opinion',
-			'knop_link'  => '#contact',
-		),
-		array(
-			'titel'      => 'Performance Screening',
-			'tekst'      => 'Krijg inzicht in je huidige fysieke capaciteit, aandachtspunten en de volgende stap richting jouw prestatiedoel.',
-			'knop_tekst' => 'Plan screening',
-			'knop_link'  => '#contact',
-		),
-		array(
-			'titel'      => 'Return-to-Sport & Running',
-			'tekst'      => 'Van sportspecifieke screening en running analysis tot videoanalyse en return-to-performance testing.',
-			'knop_tekst' => 'Plan analyse',
-			'knop_link'  => '#contact',
-		),
-	);
-}
+$fbf_specials = fbf_specialisaties();
 
 $fbf_partners = function_exists( 'get_field' ) ? get_field( 'partners' ) : false;
 if ( ! $fbf_partners ) {
@@ -101,7 +79,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
       <div class="kicker"><?php echo esc_html( fbf_field( 'about_kicker', 'Over Floran' ) ); ?></div>
       <h2><?php echo esc_html( fbf_field( 'about_titel', 'Jouw partner in herstel én topprestaties.' ) ); ?></h2>
       <?php
-      $fbf_about_tekst = fbf_field( 'about_tekst', "Mijn naam is Floran, oprichter van Fit by Floran – High Performance Physiotherapy. Sport heeft altijd centraal gestaan in mijn leven. Juist daardoor weet ik hoe belangrijk het is om volledig op je lichaam te kunnen vertrouwen.\n\nEen blessure is zelden alleen een fysieke beperking. Het beïnvloedt je prestaties, je zelfvertrouwen en het plezier waarmee je sport. Mijn missie is daarom om sporters niet alleen klachtenvrij te maken, maar sterker terug te laten komen dan voorheen.\n\nIk kijk verder dan de pijnklacht alleen. Ik analyseer hoe jouw lichaam beweegt, wordt belast en optimaal kan presteren. Op basis daarvan ontwikkelen we samen een persoonlijk plan dat aansluit op jouw sport, niveau en ambities.\n\nGeen standaardprotocollen, maar maatwerk waarin wetenschappelijke inzichten, klinische expertise en persoonlijke begeleiding samenkomen." );
+      $fbf_about_tekst = fbf_about_tekst();
       foreach ( explode( "\n\n", $fbf_about_tekst ) as $fbf_p ) :
         if ( trim( $fbf_p ) === '' ) { continue; }
       ?>
@@ -119,15 +97,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
     <p class="lead"><?php echo esc_html( fbf_field( 'aanpak_intro', 'Succesvol herstellen begint met inzicht. Iedere samenwerking volgt een gestructureerd traject, gericht op duurzame vooruitgang.' ) ); ?></p>
     <div class="steps">
       <?php
-      $fbf_stappen = function_exists( 'get_field' ) ? get_field( 'aanpak_stappen' ) : false;
-      if ( ! $fbf_stappen ) {
-        $fbf_stappen = array(
-          array( 'label' => '01 · ANALYSE', 'titel' => 'Inzicht', 'tekst' => 'Uitgebreide intake en performance screening van mobiliteit, kracht, belastbaarheid, blessuregeschiedenis en sportdoelen.' ),
-          array( 'label' => '02 · HERSTEL', 'titel' => 'Belastbaarheid', 'tekst' => 'Gericht herstel met aandacht voor pijn, functie, kracht en het opnieuw opbouwen van vertrouwen in je lichaam.' ),
-          array( 'label' => '03 · PREVENTIE', 'titel' => 'Behouden', 'tekst' => 'Gerichte training, monitoring en slim belastingmanagement om terugkerende klachten te helpen voorkomen.' ),
-          array( 'label' => '04 · PERFORMANCE', 'titel' => 'Presteren', 'tekst' => 'Van klachtenvrij naar sterker, sneller en beter voorbereid op de eisen van jouw sport.' ),
-        );
-      }
+      $fbf_stappen = fbf_aanpak_stappen();
       foreach ( $fbf_stappen as $fbf_stap ) :
       ?>
       <div class="step">
