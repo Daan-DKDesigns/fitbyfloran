@@ -321,6 +321,27 @@ add_action( 'wp_enqueue_scripts', function () {
 	}
 }, 100 );
 
+/**
+ * Extra attributen voor een <img> uit een ACF-afbeelding: vaste afmetingen (geen verspringende
+ * pagina tijdens het laden) en pas laden als de foto in beeld komt.
+ */
+function fbf_img_attrs( $image ) {
+	$attrs = ' loading="lazy" decoding="async"';
+	if ( ! empty( $image['width'] ) && ! empty( $image['height'] ) ) {
+		$attrs .= sprintf( ' width="%d" height="%d"', (int) $image['width'], (int) $image['height'] );
+	}
+	return $attrs;
+}
+
+/** De hero-foto is het grootste element bovenaan: die laat de browser als eerste ophalen. */
+add_action( 'wp_head', function () {
+	if ( ! is_front_page() ) {
+		return;
+	}
+	$image = fbf_seo_image();
+	printf( "<link rel=\"preload\" as=\"image\" href=\"%s\" fetchpriority=\"high\">\n", esc_url( $image['url'] ) );
+}, 2 );
+
 /** Kleur van de browserbalk op de telefoon, gelijk aan de zwarte header. */
 add_action( 'wp_head', function () {
 	echo "<meta name=\"theme-color\" content=\"#0e0e0e\">\n";

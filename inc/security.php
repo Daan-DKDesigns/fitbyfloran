@@ -32,6 +32,9 @@ add_filter( 'login_errors', function ( $error ) {
 	return $error;
 } );
 
+/** Applicatiewachtwoorden (inloggen voor externe apps) gebruikt de site niet: weer een deur minder. */
+add_filter( 'wp_is_application_passwords_available', '__return_false' );
+
 /** XML-RPC en pingbacks zijn niet nodig en worden vooral misbruikt. */
 add_filter( 'xmlrpc_enabled', '__return_false' );
 add_filter( 'wp_headers', function ( $headers ) {

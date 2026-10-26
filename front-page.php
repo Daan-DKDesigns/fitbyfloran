@@ -94,8 +94,8 @@ $fbf_wa_url         = fbf_whatsapp_url();
 <section id="over">
   <div class="container about">
     <div class="about-images">
-      <img src="<?php echo esc_url( $fbf_about_img1['url'] ); ?>" alt="<?php echo esc_attr( ! empty( $fbf_about_img1['alt'] ) ? $fbf_about_img1['alt'] : 'Floran' ); ?>">
-      <img src="<?php echo esc_url( $fbf_about_img2['url'] ); ?>" alt="<?php echo esc_attr( ! empty( $fbf_about_img2['alt'] ) ? $fbf_about_img2['alt'] : 'Floran' ); ?>">
+      <img src="<?php echo esc_url( $fbf_about_img1['url'] ); ?>" alt="<?php echo esc_attr( ! empty( $fbf_about_img1['alt'] ) ? $fbf_about_img1['alt'] : 'Floran, sportfysiotherapeut en oprichter van Fit by Floran' ); ?>"<?php echo fbf_img_attrs( $fbf_about_img1 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
+      <img src="<?php echo esc_url( $fbf_about_img2['url'] ); ?>" alt="<?php echo esc_attr( ! empty( $fbf_about_img2['alt'] ) ? $fbf_about_img2['alt'] : 'Floran begeleidt een sporter op het veld' ); ?>"<?php echo fbf_img_attrs( $fbf_about_img2 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
     </div>
     <div class="copy">
       <div class="kicker"><?php echo esc_html( fbf_field( 'about_kicker', 'Over Floran' ) ); ?></div>
@@ -198,7 +198,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
       <h2>Van herstel naar volledige performance.</h2>
       <p class="lead">Of je nu op nationaal of internationaal niveau actief bent, een ambitieuze recreatieve sporter bent of behoefte hebt aan een onafhankelijke second opinion: de begeleiding wordt afgestemd op jouw situatie, sport en ambitie.</p>
     </div>
-    <img src="<?php echo esc_url( $fbf_second_img['url'] ); ?>" alt="<?php echo esc_attr( ! empty( $fbf_second_img['alt'] ) ? $fbf_second_img['alt'] : 'Fit by Floran' ); ?>">
+    <img src="<?php echo esc_url( $fbf_second_img['url'] ); ?>" alt="<?php echo esc_attr( ! empty( $fbf_second_img['alt'] ) ? $fbf_second_img['alt'] : 'Sportfysiotherapie en performancebegeleiding bij Fit by Floran' ); ?>"<?php echo fbf_img_attrs( $fbf_second_img ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
   </div>
 </section>
 
@@ -214,7 +214,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
       ?>
       <<?php echo $fbf_partner_tag; ?> class="partner-logo"<?php if ( $fbf_partner_url ) : ?> href="<?php echo esc_url( $fbf_partner_url ); ?>" target="_blank" rel="noopener noreferrer"<?php endif; ?>>
         <?php if ( ! empty( $fbf_partner['logo']['url'] ) ) : ?>
-          <img src="<?php echo esc_url( $fbf_partner['logo']['url'] ); ?>" alt="<?php echo esc_attr( $fbf_partner['naam'] ); ?>">
+          <img src="<?php echo esc_url( $fbf_partner['logo']['url'] ); ?>" alt="<?php echo esc_attr( $fbf_partner['naam'] ); ?>"<?php echo fbf_img_attrs( $fbf_partner['logo'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
         <?php else : ?>
           <span class="partner-initial"><?php echo esc_html( $fbf_partner['initialen'] ); ?></span>
         <?php endif; ?>
