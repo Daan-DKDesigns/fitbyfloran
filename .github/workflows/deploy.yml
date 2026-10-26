@@ -1,0 +1,84 @@
+# Zet het thema bij elke push naar main live op de hosting van TransIP.
+# Logt via SSH in met een eigen deploy-key en doet daar `git pull` in de themamap,
+# zodat de map op de server een nette git-checkout blijft (geen PuTTY meer nodig).
+# Nodig: het repository-geheim TRANSIP_SSH_KEY (de privésleutel van de deploy-key).
+# De bijbehorende publieke sleutel staat bij TransIP onder Webhosting > SFTP/SSH > Keys.
+name: Deploy naar TransIP
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Nooit twee deploys tegelijk.
+concurrency:
+  group: deploy-transip
+  cancel-in-progress: false
+
+env:
+  SSH_HOST: fitbyg.ssh.transip.me
+  SSH_USER: fitbyflorannl
+  THEMA_PAD: www/wp-content/themes/fit-by-floran
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code ophalen
+        uses: actions/checkout@v5
+
+      - name: PHP-syntax controleren
+        run: |
+          find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l > /dev/null
+          echo "Alle PHP-bestanden zijn in orde."
+
+      - name: Controleren of de deploy-sleutel is ingesteld
+        id: sleutel
+        env:
+          SSH_KEY: ${{ secrets.TRANSIP_SSH_KEY }}
+        run: |
+          if [ -z "$SSH_KEY" ]; then
+            echo "::warning::Geheim TRANSIP_SSH_KEY ontbreekt nog; er is niets live gezet."
+            echo "klaar=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "klaar=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: SSH klaarzetten
+        if: steps.sleutel.outputs.klaar == 'true'
+        env:
+          SSH_KEY: ${{ secrets.TRANSIP_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Vaste vingerafdrukken van de TransIP-server: nooit verbinden met een andere server.
+          cat > ~/.ssh/known_hosts <<'HOSTS'
+          fitbyg.ssh.transip.me ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBAPRSsS8jIHOG7S0AQbu+iwpbz+oJE84kPNTcQ3cBwNCY4rj5wBXAwzD3kSmzOHHXEOmUzFbvrAJ0xkbpCK9Jdw=
+          fitbyg.ssh.transip.me ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILahUANSEn7qI7WS7Gas+eUUvgB+poWhC3mx0Hb4JAtI
+          fitbyg.ssh.transip.me ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDoOURP5Frss6ZRDY0ev6IaNTAaUzeCWeaPWF2U7i2amt0i+omSbcZrSk/2Dvp0hPJ0rmhnmS+sUCs37mOIGlDhDTUqNZY13xiMy12+lfK8fuy9dNGeZA9bu2j3m0xMf0fzZvyh2Ucb5UQWJ2dO4iGUB0Yz5kXru+GAFWzcQptJtILXOFFaKUhT2Wvsj7IjiT6P1fIfun/tV/HSAupuSkSmyixXYdZJdJwiXUmf5XVX0DPztmuxkREq4aIKimh6zos7mXnelJHMm6utmFMFkZr8fqbIXCOhxoOsMDIPDkuoeix4CvvFJWNYfUQStKNWyhzbzeSS4VvUnbAGBANG6Q80a+fzIkEiNr11Wr4fF5Qrsh0bI2O3NvJ7H1n7UvKE4iYby3mKrol2e4R4NLw2YNCUemkrzSf9i/KhIO+TZ8ZcY3bqIt4DtwFMFuaTEE/RoC049ZU4jTvSiyPu8/mkwjiUPqH5X60mXNW+5d/wz/JBlL8G86d3t6k9ykjD3CukkSc=
+          HOSTS
+          sed -i 's/^ *//' ~/.ssh/known_hosts
+
+      - name: Live zetten (git pull op de server)
+        if: steps.sleutel.outputs.klaar == 'true'
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts \
+            "$SSH_USER@$SSH_HOST" "THEMA_PAD='$THEMA_PAD' bash -s" <<'REMOTE'
+          set -e
+          cd "$HOME/$THEMA_PAD"
+          # Is er op de server zelf iets aangepast? Dan niets overschrijven en stoppen.
+          if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+            echo "::error::Er zijn wijzigingen direct op de server gemaakt. Niets overschreven; los dit eerst op."
+            git status --short
+            exit 1
+          fi
+          git checkout -q main
+          echo "Was: $(git log --oneline -1)"
+          git pull --ff-only -q origin main
+          echo "Nu:  $(git log --oneline -1)"
+          REMOTE
+
+      - name: Opruimen
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
