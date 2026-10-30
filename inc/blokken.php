@@ -240,7 +240,9 @@ add_action( 'admin_init', function () {
 		if ( get_posts( array( 'post_type' => $type, 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids' ) ) ) {
 			continue;
 		}
-		foreach ( $cfg['start'] as $i => $item ) {
+		// Eerst wat er eventueel al in de oude herhaalvelden van de voorpagina stond; anders de demo-teksten.
+		$oud = fbf_blok_oude_inhoud( $type );
+		foreach ( ( $oud ? $oud : $cfg['start'] ) as $i => $item ) {
 			$meta = array();
 			foreach ( $cfg['velden'] as $veld ) {
 				if ( isset( $item[ $veld['name'] ] ) ) {
@@ -258,6 +260,40 @@ add_action( 'admin_init', function () {
 		}
 	}
 } );
+
+/**
+ * Inhoud uit de oude herhaalvelden op de voorpagina (aanpak_stappen, specialisaties, partners),
+ * zoals ACF die opslaat: aantal in "{veld}" en per rij "{veld}_{n}_{subveld}".
+ * Zo gaat niets verloren van wat er ooit is ingevuld. Leeg = niets gevonden.
+ */
+function fbf_blok_oude_inhoud( $type ) {
+	$front = (int) get_option( 'page_on_front' );
+	$map   = array(
+		'fbf_stap'          => array( 'aanpak_stappen', array( 'titel' => 'titel', 'label' => 'label', 'tekst' => 'tekst' ) ),
+		'fbf_specialisatie' => array( 'specialisaties', array( 'titel' => 'titel', 'tekst' => 'tekst', 'knop_tekst' => 'knop_tekst', 'knop_link' => 'knop_link' ) ),
+		'fbf_partner'       => array( 'partners', array( 'titel' => 'naam', 'url' => 'url', 'initialen' => 'initialen', 'logo' => 'logo' ) ),
+	);
+	if ( ! $front || ! isset( $map[ $type ] ) ) {
+		return array();
+	}
+	list( $veld, $velden ) = $map[ $type ];
+	$aantal                = (int) get_post_meta( $front, $veld, true );
+	$items                 = array();
+	for ( $n = 0; $n < $aantal; $n++ ) {
+		$item = array();
+		foreach ( $velden as $nieuw => $oud ) {
+			$item[ $nieuw ] = get_post_meta( $front, $veld . '_' . $n . '_' . $oud, true );
+		}
+		if ( 'fbf_stap' === $type ) {
+			// "01 · ANALYSE" werd "ANALYSE": het nummer zet de site er nu zelf voor.
+			$item['label'] = trim( preg_replace( '/^\s*\d+\s*[·.\-–]\s*/u', '', (string) $item['label'] ) );
+		}
+		if ( '' !== trim( (string) $item['titel'] ) ) {
+			$items[] = $item;
+		}
+	}
+	return $items;
+}
 
 /* ---------- Uitlezen voor de voorpagina ---------- */
 
@@ -278,7 +314,11 @@ function fbf_blokken( $type ) {
 	if ( ! $posts ) {
 		$bestaat = get_posts( array( 'post_type' => $type, 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids' ) );
 		// Alles bewust verborgen (op concept gezet)? Dan ook niets tonen.
-		return $bestaat ? array() : $cfg['start'];
+		if ( $bestaat ) {
+			return array();
+		}
+		$oud = fbf_blok_oude_inhoud( $type );
+		return $oud ? $oud : $cfg['start'];
 	}
 
 	$items = array();

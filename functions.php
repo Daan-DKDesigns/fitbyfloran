@@ -1,14 +1,19 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'FBF_VERSION', '1.3.0' );
+define( 'FBF_VERSION', '1.4.0' );
 
 /**
  * Onderhoudsmodus: bezoekers zien "Binnenkort live", ingelogde beheerders de echte site.
- * Uitzetten bij livegang: zet hier false, of definieer FBF_MAINTENANCE in wp-config.php.
+ * Aan/uit via Fit by Floran → Site-instellingen → "Onderhoudsmodus" (standaard aan).
+ * FBF_MAINTENANCE in wp-config.php gaat altijd voor, mocht het admin onbereikbaar zijn.
  */
-if ( ! defined( 'FBF_MAINTENANCE' ) ) {
-	define( 'FBF_MAINTENANCE', true );
+function fbf_onderhoud_aan() {
+	if ( defined( 'FBF_MAINTENANCE' ) ) {
+		return (bool) FBF_MAINTENANCE;
+	}
+	$waarde = get_option( 'options_onderhoudsmodus', null ); // Zo slaat ACF een veld op een opties-pagina op.
+	return null === $waarde ? true : (bool) $waarde;
 }
 
 /** Theme setup */
@@ -25,8 +30,17 @@ add_action( 'after_setup_theme', 'fbf_setup' );
 function fbf_assets() {
 	wp_enqueue_style( 'fbf-style', get_stylesheet_uri(), array(), FBF_VERSION );
 	wp_enqueue_script( 'fbf-main', get_template_directory_uri() . '/assets/js/main.js', array(), FBF_VERSION, true );
+	wp_enqueue_script( 'fbf-motion', get_template_directory_uri() . '/assets/js/motion.js', array(), FBF_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 }
 add_action( 'wp_enqueue_scripts', 'fbf_assets' );
+
+/**
+ * Micro-animaties alleen aanzetten als JavaScript werkt en de bezoeker geen "beweging beperken"
+ * heeft ingesteld. Staat vroeg in de <head>, zodat de hero-animatie meteen goed start.
+ */
+add_action( 'wp_head', function () {
+	echo "<script>if(!window.matchMedia||!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('fbf-anim')}</script>\n";
+}, 1 );
 
 /** Favicon uit het thema, zolang er geen site-icoon is ingesteld via Aanpassen → Site-identiteit. */
 function fbf_favicon_fallback() {
@@ -368,8 +382,39 @@ function fbf_default_menu( $args = array() ) {
 }
 
 function fbf_contact_email() {
-	return fbf_field( 'contact_email', 'fitbyfloran@hotmail.com', 'option' );
+	return fbf_field( 'contact_email', 'info@fitbyfloran.com', 'option' );
 }
+
+/**
+ * Eenmalig: het oude hotmail-adres in Site-instellingen vervangen door info@fitbyfloran.com.
+ * Alleen als daar nog precies het oude adres staat; een zelf ingevuld ander adres blijft staan.
+ */
+add_action( 'admin_init', function () {
+	if ( get_option( 'fbf_email_bijgewerkt' ) || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	update_option( 'fbf_email_bijgewerkt', 1, false );
+	if ( 'fitbyfloran@hotmail.com' === strtolower( trim( (string) get_option( 'options_contact_email' ) ) ) ) {
+		update_option( 'options_contact_email', 'info@fitbyfloran.com' );
+	}
+} );
+
+/** Altijd zichtbaar in de adminbalk of de onderhoudsmodus aan staat, met een link naar de schakelaar. */
+add_action( 'admin_bar_menu', function ( $bar ) {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$aan = fbf_onderhoud_aan();
+	$bar->add_node( array(
+		'id'    => 'fbf-onderhoud',
+		'title' => $aan ? '&#9679; Onderhoudsmodus AAN' : '&#9679; Site is live',
+		'href'  => admin_url( 'admin.php?page=fbf-options' ),
+		'meta'  => array(
+			'title' => $aan ? 'Bezoekers zien "Binnenkort live". Klik om dit te wijzigen.' : 'Bezoekers zien de echte site. Klik om de onderhoudsmodus aan te zetten.',
+			'html'  => '<style>#wp-admin-bar-fbf-onderhoud>.ab-item{color:' . ( $aan ? '#f0b849' : '#7ad03a' ) . '!important}</style>',
+		),
+	) );
+}, 100 );
 
 function fbf_contact_phone() {
 	return fbf_field( 'contact_telefoon', '06 3428 0140', 'option' );
@@ -467,7 +512,7 @@ add_action( 'admin_post_nopriv_fbf_contact', 'fbf_process_contact_form' );
 
 function fitbyfloran_maintenance_mode() {
 	// robots.txt en favicon.ico blijven bereikbaar, ook voor zoekmachines tijdens het onderhoud.
-	if ( ! FBF_MAINTENANCE || is_admin() || is_robots() || is_favicon() || current_user_can( 'manage_options' ) ) {
+	if ( ! fbf_onderhoud_aan() || is_admin() || is_robots() || is_favicon() || current_user_can( 'manage_options' ) ) {
 		return;
 	}
 

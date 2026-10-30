@@ -510,6 +510,33 @@
         "title": "Site-instellingen — Fit by Floran",
         "fields": [
             {
+                "key": "field_fbf_tab_onderhoud",
+                "label": "Website online",
+                "name": "",
+                "type": "tab",
+                "placement": "top",
+                "endpoint": 0
+            },
+            {
+                "key": "field_fbf_onderhoudsmodus",
+                "label": "Onderhoudsmodus",
+                "name": "onderhoudsmodus",
+                "type": "true_false",
+                "ui": 1,
+                "ui_on_text": "Aan",
+                "ui_off_text": "Uit",
+                "default_value": 1,
+                "instructions": "Aan = bezoekers zien de pagina \"Binnenkort live\". Uit = iedereen ziet de echte website. Als beheerder zie je altijd de echte website, ook als dit aan staat."
+            },
+            {
+                "key": "field_fbf_tab_contact",
+                "label": "Contact & socials",
+                "name": "",
+                "type": "tab",
+                "placement": "top",
+                "endpoint": 0
+            },
+            {
                 "key": "field_fbf_whatsapp_nummer",
                 "label": "WhatsApp nummer",
                 "name": "whatsapp_nummer",
@@ -535,10 +562,11 @@
             },
             {
                 "key": "field_fbf_contact_email",
-                "label": "Contact e-mailadres",
+                "label": "E-mailadres",
                 "name": "contact_email",
                 "type": "text",
-                "default_value": "fitbyfloran@hotmail.com"
+                "default_value": "info@fitbyfloran.com",
+                "instructions": "Hier komen de intake-aanvragen binnen. Staat ook in de footer."
             },
             {
                 "key": "field_fbf_contact_telefoon",

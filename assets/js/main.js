@@ -8,8 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    const icon = document.getElementById('hamburgerIcon');
-
     function setMenuOpen(open) {
         hamburger.setAttribute('aria-expanded', String(open));
         hamburger.setAttribute(
@@ -20,14 +18,9 @@ document.addEventListener('DOMContentLoaded', function () {
         mobileMenu.classList.toggle('is-open', open);
         mobileMenu.setAttribute('aria-hidden', String(!open));
 
-        if (icon) {
-            icon.innerHTML = open
-                ? '<line x1="18" y1="6" x2="6" y2="18"></line>' +
-                  '<line x1="6" y1="6" x2="18" y2="18"></line>'
-                : '<line x1="3" y1="6" x2="21" y2="6"></line>' +
-                  '<line x1="3" y1="12" x2="21" y2="12"></line>' +
-                  '<line x1="3" y1="18" x2="21" y2="18"></line>';
-        }
+        // De pagina eronder scrollt niet mee zolang het menu open is.
+        // Het hamburgericoon wordt via CSS (aria-expanded) een kruisje.
+        document.documentElement.classList.toggle('fbf-menu-open', open);
     }
 
     hamburger.addEventListener('click', function () {
