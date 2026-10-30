@@ -28,6 +28,14 @@ document.addEventListener('DOMContentLoaded', function () {
             hamburger.getAttribute('aria-expanded') === 'true';
 
         setMenuOpen(!isOpen);
+
+        // Toetsenbord en schermlezer: na openen meteen in het menu, na sluiten terug op de knop.
+        if (!isOpen) {
+            const eerste = mobileMenu.querySelector('a');
+            if (eerste) {
+                window.setTimeout(function () { eerste.focus({ preventScroll: true }); }, 50);
+            }
+        }
     });
 
     // Sluit met Escape

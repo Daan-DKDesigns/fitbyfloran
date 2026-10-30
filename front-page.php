@@ -44,7 +44,7 @@ $fbf_contact_status = isset( $_GET['contact'] ) ? sanitize_key( wp_unslash( $_GE
 $fbf_wa_url         = fbf_whatsapp_url();
 ?>
 
-<main>
+<main id="inhoud">
 <section class="hero"<?php echo $fbf_hero_style; ?>>
   <div class="container hero-inner">
     <div class="eyebrow"><?php echo esc_html( fbf_field( 'hero_eyebrow', 'Fit by Floran · High Performance Physiotherapy' ) ); ?></div>

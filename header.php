@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+<a class="skip-link" href="#inhoud"><?php esc_html_e( 'Naar de inhoud', 'fitbyfloran' ); ?></a>
 
 <header class="site-header">
     <div class="container site-header__inner">
