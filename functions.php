@@ -71,6 +71,7 @@ function fbf_acf_options_pages() {
 }
 add_action( 'acf/init', 'fbf_acf_options_pages', 5 );
 
+require_once get_template_directory() . '/inc/blokken.php';
 require_once get_template_directory() . '/inc/content.php';
 require_once get_template_directory() . '/inc/security.php';
 require_once get_template_directory() . '/inc/seo.php';
@@ -370,6 +371,25 @@ function fbf_whatsapp_url() {
 	return 'https://wa.me/' . $number . '?text=' . rawurlencode( $message );
 }
 
+/** Eenvoudige lijn-iconen (SVG) voor contact en socials, in de kleur van de tekst. */
+function fbf_icoon( $naam, $maat = 18 ) {
+	$paden = array(
+		'mail'      => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+		'telefoon'  => '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+		'whatsapp'  => '<path d="M3.5 20.5 5 16a8.5 8.5 0 1 1 3 3z"/><path d="M9 9.5c.3 2.4 2.1 4.2 4.5 4.5l1-1.3 2 .8-.3 1.6c-.2.6-.8 1-1.4.9-3.6-.5-6.3-3.2-6.8-6.8-.1-.6.3-1.2.9-1.4l1.6-.3.8 2z"/>',
+		'instagram' => '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/>',
+		'linkedin'  => '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/>',
+	);
+	if ( ! isset( $paden[ $naam ] ) ) {
+		return '';
+	}
+	return sprintf(
+		'<svg class="icoon" width="%1$d" height="%1$d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">%2$s</svg>',
+		(int) $maat,
+		$paden[ $naam ]
+	);
+}
+
 function fbf_process_contact_form() {
 	$redirect = home_url( '/' );
 
@@ -388,16 +408,18 @@ function fbf_process_contact_form() {
 	$email     = isset( $_POST['fbf_email'] ) ? sanitize_email( wp_unslash( $_POST['fbf_email'] ) ) : '';
 	$telefoon  = isset( $_POST['fbf_telefoon'] ) ? sanitize_text_field( wp_unslash( $_POST['fbf_telefoon'] ) ) : '';
 	$bericht   = isset( $_POST['fbf_bericht'] ) ? sanitize_textarea_field( wp_unslash( $_POST['fbf_bericht'] ) ) : '';
+	$hulpvraag = isset( $_POST['fbf_hulpvraag'] ) ? mb_substr( sanitize_text_field( wp_unslash( $_POST['fbf_hulpvraag'] ) ), 0, 100 ) : '';
 	$naam      = str_replace( array( "\r", "\n" ), '', $naam );
 
-	if ( $naam === '' || ! is_email( $email ) || $bericht === '' ) {
+	// Naam en e-mail zijn verplicht, en óf een keuze óf een toelichting.
+	if ( $naam === '' || ! is_email( $email ) || ( $hulpvraag === '' && $bericht === '' ) ) {
 		wp_safe_redirect( $redirect . '?contact=fout#contact' );
 		exit;
 	}
 
 	$to      = fbf_contact_email();
-	$subject = 'Aanvraag via fitbyfloran.nl — ' . $naam;
-	$body    = "Naam: {$naam}\nE-mail: {$email}\nTelefoon: {$telefoon}\n\nBericht:\n{$bericht}\n";
+	$subject = 'Intake-aanvraag via fitbyfloran.nl — ' . $naam . ( $hulpvraag !== '' ? ' (' . $hulpvraag . ')' : '' );
+	$body    = "Naam: {$naam}\nE-mail: {$email}\nTelefoon: " . ( $telefoon !== '' ? $telefoon : '-' ) . "\nHulpvraag: " . ( $hulpvraag !== '' ? $hulpvraag : '-' ) . "\n\nToelichting:\n" . ( $bericht !== '' ? $bericht : '-' ) . "\n";
 	$headers = array(
 		'Content-Type: text/plain; charset=UTF-8',
 		'Reply-To: ' . $naam . ' <' . $email . '>',

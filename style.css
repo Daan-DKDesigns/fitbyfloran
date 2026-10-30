@@ -75,6 +75,9 @@ h3{font-size:20px;margin:0 0 9px}
 .partner-logo span{font-size:9px;display:block;letter-spacing:.13em;color:var(--gold2);text-align:center;font-weight:900}
 .partner-logo .partner-initial{font-size:22px;letter-spacing:.04em;font-weight:700}
 .partner-logo img{max-height:48px;max-width:100%;width:auto;object-fit:contain}
+.partner-logo--logo{background:#f3f0e9;border-color:#f3f0e9}
+.partner-logo--logo span{color:#5e666c}
+.partner-logo--logo img{max-height:56px}
 .partner-note{font-size:11px;color:#72777b;margin-top:16px}
 .cta{background:linear-gradient(135deg,#101113,#1a1c1f);text-align:center;border-top:1px solid #282b2d}
 .cta .lead{margin:0 auto 30px}
@@ -84,29 +87,52 @@ footer .custom-logo{width:auto;height:auto;max-width:300px;max-height:95px;objec
 footer .logo-text{font-size:20px;font-weight:800;letter-spacing:.04em}
 footer .logo-text span{color:var(--gold2)}
 footer h4{margin:0 0 12px;color:var(--gold2);font-size:11px;letter-spacing:.16em;text-transform:uppercase}
-.social{display:flex;gap:10px;margin-top:15px}
-.social a{width:42px;height:42px;border:1px solid #555;border-radius:50%;display:grid;place-items:center;text-decoration:none;font-weight:900;font-size:14px}
-.social a:hover{border-color:var(--gold);color:var(--gold2)}
-.footer-contact{display:flex;flex-direction:column;gap:6px}
-.footer-contact a{color:inherit;text-decoration:none}
-.footer-contact a:hover{color:var(--gold2)}
+.footer-contact{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.footer-contact a{display:inline-flex;align-items:center;gap:10px;color:#c8ccce;text-decoration:none;min-height:28px}
+.footer-contact a:hover,.footer-contact a:focus-visible{color:var(--gold2)}
+.footer-contact .icoon{flex:0 0 auto;color:var(--gold2)}
 footer .muted a{color:inherit;text-decoration:none}
 footer .muted a:hover{color:var(--gold2)}
 .footer-bottom{margin-top:35px;padding-top:17px;border-top:1px solid #1e2022;color:#777;font-size:11px;display:flex;justify-content:space-between;gap:20px}
-.whatsapp{position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;background:#25d366;color:#fff;display:grid;place-items:center;z-index:30;text-decoration:none;font-size:25px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
-.whatsapp:hover{transform:scale(1.1)}
+.whatsapp{position:fixed;right:22px;bottom:22px;height:56px;min-width:56px;padding:0 16px;border-radius:28px;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;z-index:30;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.3);transition:transform .2s ease}
+.whatsapp:hover,.whatsapp:focus-visible{transform:translateY(-2px)}
+.whatsapp__label{font-size:13px;font-weight:800;letter-spacing:.02em;white-space:nowrap}
+@media(max-width:650px){.whatsapp{right:16px;bottom:16px;width:56px;padding:0}.whatsapp__label{display:none}}
 @media(max-width:1000px){.hero{background-attachment:scroll}.services{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.about,.second{grid-template-columns:1fr}.partner-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:650px){.hero{min-height:780px}.hero p.lead-text{font-size:17px}.services,.steps,.special,.partner-grid{grid-template-columns:1fr}.about-images{grid-template-columns:1fr;gap:6px}.about-images img:first-child{grid-row:span 1;height:auto}.footer-top{grid-template-columns:1fr}}
+@media(max-width:650px){.hero{min-height:780px}.hero p.lead-text{font-size:17px}.services,.steps,.special{grid-template-columns:1fr}.partner-grid{grid-template-columns:1fr 1fr}.about-images{grid-template-columns:1fr;gap:6px}.about-images img:first-child{grid-row:span 1;height:auto}.footer-top{grid-template-columns:1fr}}
 /* ========================================
-   FIT BY FLORAN CONTACT FORM
+   FIT BY FLORAN CONTACT FORM (intake)
+   Kaart in de stijl van de site: donker paneel, gouden accent, compact.
+   Op mobiel 16px tekst (anders zoomt iOS in) en grote tikvlakken.
 ======================================== */
 
 .contact-form {
     width: 100%;
-    max-width: 480px;
-    margin: 0 auto 22px;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 26px 26px 22px;
     text-align: left;
     position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--gold);
+}
+
+.contact-form__head {
+    margin-bottom: 18px;
+}
+
+.contact-form__head strong {
+    display: block;
+    font-size: 18px;
+    color: var(--white);
+}
+
+.contact-form__head span {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--muted);
 }
 
 .contact-form__honeypot {
@@ -118,11 +144,11 @@ footer .muted a:hover{color:var(--gold2)}
 }
 
 .contact-form__notice {
-    max-width: 480px;
+    max-width: 560px;
     margin: 0 auto 18px;
-    padding: 10px 14px;
-    border-radius: 4px;
+    padding: 12px 14px;
     font-size: 14px;
+    text-align: left;
 }
 
 .contact-form__notice--ok {
@@ -142,97 +168,122 @@ footer .muted a:hover{color:var(--gold2)}
 }
 
 .contact-form__field {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .contact-form__field label {
     display: block;
-    margin-bottom: 5px;
-
-    font-size: 13px;
-    font-weight: 500;
-    color: #111111;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--gold2);
 }
 
 .contact-form__field label span {
-    color: #777777;
+    color: #8a8e91;
     font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 .contact-form__field input,
+.contact-form__field select,
 .contact-form__field textarea {
     width: 100%;
-    padding: 9px 12px;
-
-    background: #ffffff;
-
-    border: 1px solid #d8d2bc;
-    border-radius: 4px;
-
-    color: #111111;
-
+    min-height: 46px;
+    padding: 11px 13px;
+    background: #0d0f11;
+    border: 1px solid #333638;
+    border-radius: 2px;
+    color: var(--white);
     font-family: inherit;
-    font-size: 14px;
+    font-size: 15px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
 
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+.contact-form__field select {
+    appearance: none;
+    padding-right: 38px;
+    cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, var(--gold2) 50%), linear-gradient(135deg, var(--gold2) 50%, transparent 50%);
+    background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+}
+
+.contact-form__field select:invalid {
+    color: #8a8e91;
+}
+
+.contact-form__field select option,
+.contact-form__field select optgroup {
+    background: #0d0f11;
+    color: var(--white);
 }
 
 .contact-form__field textarea {
-    min-height: 96px;
+    min-height: 84px;
     resize: vertical;
 }
 
 .contact-form__field input::placeholder,
 .contact-form__field textarea::placeholder {
-    color: #999999;
+    color: #6f7478;
 }
 
 .contact-form__field input:focus,
+.contact-form__field select:focus,
 .contact-form__field textarea:focus {
     outline: none;
-
-    border-color: #c9a15b;
-
-    box-shadow: 0 0 0 2px rgba(201, 161, 91, 0.15);
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, .18);
 }
 
 .contact-form__submit {
-    margin-top: 4px;
-}
-
-@media (max-width: 650px) {
-    .contact-form__row {
-        grid-template-columns: 1fr;
-    }
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
 }
 
 .contact-form__submit .btn {
     width: 100%;
+    min-height: 50px;
     text-align: center;
 }
 
-.contact-form--dark .contact-form__field label {
-    color: #f8f8f6;
+.contact-form__wa {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
 }
 
-.contact-form--dark .contact-form__field label span {
-    color: #8a8e91;
+.contact-form__wa:hover,
+.contact-form__wa:focus-visible {
+    color: #25d366;
 }
 
-.contact-form--dark .contact-form__field input,
-.contact-form--dark .contact-form__field textarea {
-    background: #0d0f11;
-    border-color: #333638;
-    color: #f8f8f6;
-}
+@media (max-width: 650px) {
+    .contact-form {
+        padding: 20px 16px 18px;
+    }
 
-.contact-form--dark .contact-form__field input:focus,
-.contact-form--dark .contact-form__field textarea:focus {
-    border-color: var(--gold);
-}
+    .contact-form__row {
+        grid-template-columns: 1fr;
+    }
 
+    .contact-form__field input,
+    .contact-form__field select,
+    .contact-form__field textarea {
+        font-size: 16px;
+    }
+}
 
 /* ========================================
    HEADER & NAVIGATIE

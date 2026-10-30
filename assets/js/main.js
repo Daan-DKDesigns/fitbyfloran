@@ -62,3 +62,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 }); 
+
+// Intakeformulier: een knop bij een traject of specialisatie vult "Waar kan ik je mee helpen?" alvast in.
+document.addEventListener('DOMContentLoaded', function () {
+    const keuze = document.getElementById('fbf_hulpvraag');
+    if (!keuze) {
+        return;
+    }
+
+    document.addEventListener('click', function (event) {
+        const knop = event.target.closest('[data-hulpvraag]');
+        if (!knop) {
+            return;
+        }
+        const waarde = knop.getAttribute('data-hulpvraag');
+        const optie = Array.prototype.find.call(keuze.options, function (o) {
+            return o.value === waarde;
+        });
+        if (optie) {
+            keuze.value = waarde;
+        }
+    });
+});

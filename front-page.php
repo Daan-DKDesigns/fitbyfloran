@@ -38,16 +38,7 @@ $fbf_prijzen = fbf_get_prijsopgaves();
 
 $fbf_specials = fbf_specialisaties();
 
-$fbf_partners = function_exists( 'get_field' ) ? get_field( 'partners' ) : false;
-if ( ! $fbf_partners ) {
-	$fbf_partners = array(
-		array( 'naam' => "KNAP'MAN", 'initialen' => 'K', 'url' => 'https://www.knapman.nl/', 'logo' => false ),
-		array( 'naam' => 'EVOLVE PHYSIO', 'initialen' => 'EP', 'url' => 'https://www.evolvephysio.uk/', 'logo' => false ),
-		array( 'naam' => 'STATSPORTS', 'initialen' => 'SS', 'url' => 'https://statsports.com/', 'logo' => false ),
-		array( 'naam' => 'FRANS BOSCH SYSTEMS', 'initialen' => 'FBS', 'url' => 'https://www.fransbosch.systems/', 'logo' => false ),
-		array( 'naam' => 'MB SPORTPSYCHOLOGIE', 'initialen' => 'MB', 'url' => 'https://mbsportpsychologie.nl/', 'logo' => false ),
-	);
-}
+$fbf_partners = fbf_samenwerkingen();
 
 $fbf_contact_status = isset( $_GET['contact'] ) ? sanitize_key( wp_unslash( $_GET['contact'] ) ) : '';
 $fbf_wa_url         = fbf_whatsapp_url();
@@ -79,9 +70,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
       <div class="kicker"><?php echo esc_html( fbf_field( 'about_kicker', 'Over Floran' ) ); ?></div>
       <h2><?php echo esc_html( fbf_field( 'about_titel', 'Jouw partner in herstel én topprestaties.' ) ); ?></h2>
       <?php
-      $fbf_about_tekst = fbf_about_tekst();
-      foreach ( explode( "\n\n", $fbf_about_tekst ) as $fbf_p ) :
-        if ( trim( $fbf_p ) === '' ) { continue; }
+      foreach ( fbf_about_alineas() as $fbf_p ) :
       ?>
         <p><?php echo esc_html( $fbf_p ); ?></p>
       <?php endforeach; ?>
@@ -134,7 +123,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
           <?php endforeach; ?>
         </ul>
         <?php if ( $fbf_dienst['knop_tekst'] !== '' ) : ?>
-          <a class="btn <?php echo $fbf_featured ? 'btn-gold' : 'btn-outline'; ?>" href="<?php echo esc_url( $fbf_dienst['knop_link'] ?: '#contact' ); ?>"><?php echo esc_html( $fbf_dienst['knop_tekst'] ); ?></a>
+          <a class="btn <?php echo $fbf_featured ? 'btn-gold' : 'btn-outline'; ?>" href="<?php echo esc_url( $fbf_dienst['knop_link'] ?: '#contact' ); ?>" data-hulpvraag="<?php echo esc_attr( $fbf_dienst['titel'] ); ?>"><?php echo esc_html( $fbf_dienst['knop_tekst'] ); ?></a>
         <?php endif; ?>
       </article>
       <?php endforeach; ?>
@@ -153,7 +142,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
         <h3><?php echo esc_html( $fbf_special['titel'] ); ?></h3>
         <p class="muted"><?php echo esc_html( $fbf_special['tekst'] ); ?></p>
         <?php if ( ! empty( $fbf_special['knop_tekst'] ) ) : ?>
-          <a class="btn btn-outline" href="<?php echo esc_url( $fbf_special['knop_link'] ?: '#contact' ); ?>"><?php echo esc_html( $fbf_special['knop_tekst'] ); ?></a>
+          <a class="btn btn-outline" href="<?php echo esc_url( $fbf_special['knop_link'] ?: '#contact' ); ?>" data-hulpvraag="<?php echo esc_attr( $fbf_special['titel'] ); ?>"><?php echo esc_html( $fbf_special['knop_tekst'] ); ?></a>
         <?php endif; ?>
       </div>
       <?php endforeach; ?>
@@ -164,9 +153,9 @@ $fbf_wa_url         = fbf_whatsapp_url();
 <section id="resultaten" class="cream">
   <div class="container second">
     <div>
-      <div class="kicker">Voor iedere fase</div>
-      <h2>Van herstel naar volledige performance.</h2>
-      <p class="lead">Of je nu op nationaal of internationaal niveau actief bent, een ambitieuze recreatieve sporter bent of behoefte hebt aan een onafhankelijke second opinion: de begeleiding wordt afgestemd op jouw situatie, sport en ambitie.</p>
+      <div class="kicker"><?php echo esc_html( fbf_field( 'resultaten_kicker', 'Voor iedere fase' ) ); ?></div>
+      <h2><?php echo esc_html( fbf_field( 'resultaten_titel', 'Van herstel naar volledige performance.' ) ); ?></h2>
+      <p class="lead"><?php echo esc_html( fbf_field( 'resultaten_tekst', 'Of je nu op nationaal of internationaal niveau actief bent, een ambitieuze recreatieve sporter bent of behoefte hebt aan een onafhankelijke second opinion: de begeleiding wordt afgestemd op jouw situatie, sport en ambitie.' ) ); ?></p>
     </div>
     <img src="<?php echo esc_url( $fbf_second_img['url'] ); ?>" alt="<?php echo esc_attr( ! empty( $fbf_second_img['alt'] ) ? $fbf_second_img['alt'] : 'Sportfysiotherapie en performancebegeleiding bij Fit by Floran' ); ?>"<?php echo fbf_img_attrs( $fbf_second_img ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
   </div>
@@ -182,7 +171,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
         $fbf_partner_url = ! empty( $fbf_partner['url'] ) ? $fbf_partner['url'] : '';
         $fbf_partner_tag = $fbf_partner_url ? 'a' : 'div';
       ?>
-      <<?php echo $fbf_partner_tag; ?> class="partner-logo"<?php if ( $fbf_partner_url ) : ?> href="<?php echo esc_url( $fbf_partner_url ); ?>" target="_blank" rel="noopener noreferrer"<?php endif; ?>>
+      <<?php echo $fbf_partner_tag; ?> class="partner-logo<?php echo ! empty( $fbf_partner['logo']['url'] ) ? ' partner-logo--logo' : ''; ?>"<?php if ( $fbf_partner_url ) : ?> href="<?php echo esc_url( $fbf_partner_url ); ?>" target="_blank" rel="noopener noreferrer"<?php endif; ?>>
         <?php if ( ! empty( $fbf_partner['logo']['url'] ) ) : ?>
           <img src="<?php echo esc_url( $fbf_partner['logo']['url'] ); ?>" alt="<?php echo esc_attr( $fbf_partner['naam'] ); ?>"<?php echo fbf_img_attrs( $fbf_partner['logo'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
         <?php else : ?>
@@ -208,7 +197,11 @@ $fbf_wa_url         = fbf_whatsapp_url();
       <p class="contact-form__notice contact-form__notice--err" role="alert">Het bericht kon niet worden verstuurd. Controleer de velden of stuur een WhatsApp.</p>
     <?php endif; ?>
 
-    <form class="contact-form contact-form--dark" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+    <form class="contact-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+      <div class="contact-form__head">
+        <strong>Plan je gratis intake</strong>
+        <span>Vul je gegevens in, dan neem ik contact met je op.</span>
+      </div>
       <input type="hidden" name="action" value="fbf_contact">
       <?php wp_nonce_field( 'fbf_contact', 'fbf_contact_nonce' ); ?>
       <?php echo fbf_spam_token_field(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
@@ -223,25 +216,37 @@ $fbf_wa_url         = fbf_whatsapp_url();
         </div>
         <div class="contact-form__field">
           <label for="fbf_email">E-mailadres</label>
-          <input type="email" id="fbf_email" name="fbf_email" required autocomplete="email">
+          <input type="email" id="fbf_email" name="fbf_email" required autocomplete="email" inputmode="email">
+        </div>
+      </div>
+      <div class="contact-form__row">
+        <div class="contact-form__field">
+          <label for="fbf_telefoon">Telefoon <span>(optioneel)</span></label>
+          <input type="tel" id="fbf_telefoon" name="fbf_telefoon" autocomplete="tel" inputmode="tel">
+        </div>
+        <div class="contact-form__field">
+          <label for="fbf_hulpvraag">Waar kan ik je mee helpen?</label>
+          <select id="fbf_hulpvraag" name="fbf_hulpvraag" required>
+            <option value="" disabled selected>Maak een keuze</option>
+            <?php foreach ( fbf_hulpvragen() as $fbf_groep => $fbf_opties ) : ?>
+              <optgroup label="<?php echo esc_attr( $fbf_groep ); ?>">
+                <?php foreach ( $fbf_opties as $fbf_optie ) : ?>
+                  <option value="<?php echo esc_attr( $fbf_optie ); ?>"><?php echo esc_html( $fbf_optie ); ?></option>
+                <?php endforeach; ?>
+              </optgroup>
+            <?php endforeach; ?>
+          </select>
         </div>
       </div>
       <div class="contact-form__field">
-        <label for="fbf_telefoon">Telefoon <span>(optioneel)</span></label>
-        <input type="tel" id="fbf_telefoon" name="fbf_telefoon" autocomplete="tel">
-      </div>
-      <div class="contact-form__field">
-        <label for="fbf_bericht">Bericht</label>
-        <textarea id="fbf_bericht" name="fbf_bericht" required></textarea>
+        <label for="fbf_bericht">Toelichting <span>(optioneel)</span></label>
+        <textarea id="fbf_bericht" name="fbf_bericht" rows="3" placeholder="Bijv. je sport, niveau en waar je tegenaan loopt"></textarea>
       </div>
       <div class="contact-form__submit">
         <button class="btn btn-gold" type="submit">Verstuur intake-aanvraag</button>
+        <a class="contact-form__wa" href="<?php echo esc_url( $fbf_wa_url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo fbf_icoon( 'whatsapp' ); // phpcs:ignore WordPress.Security.EscapeOutput ?> Liever direct contact? Stuur een WhatsApp</a>
       </div>
     </form>
-
-    <div class="actions" style="justify-content:center">
-      <a class="btn btn-outline" href="<?php echo esc_url( $fbf_wa_url ); ?>" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-    </div>
   </div>
 </section>
 </main>
