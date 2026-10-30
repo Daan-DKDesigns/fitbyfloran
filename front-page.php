@@ -211,8 +211,8 @@ $fbf_wa_url         = fbf_whatsapp_url();
 
       <form class="contact-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
         <div class="contact-form__head">
-          <h3>Plan je gratis intake</h3>
-          <p>Binnen een minuut ingevuld. Ik neem daarna persoonlijk contact met je op.</p>
+          <h3><?php echo esc_html( fbf_field( 'formulier_titel', 'Plan je gratis intake' ) ); ?></h3>
+          <p><?php echo esc_html( fbf_field( 'formulier_tekst', 'Binnen een minuut ingevuld. Ik neem daarna persoonlijk contact met je op.' ) ); ?></p>
         </div>
         <input type="hidden" name="action" value="fbf_contact">
         <?php wp_nonce_field( 'fbf_contact', 'fbf_contact_nonce' ); ?>
@@ -255,14 +255,14 @@ $fbf_wa_url         = fbf_whatsapp_url();
           <textarea id="fbf_bericht" name="fbf_bericht" rows="3" placeholder="Bijv. je sport, je niveau en waar je tegenaan loopt"></textarea>
         </div>
         <div class="contact-form__submit">
-          <button class="btn btn-gold" type="submit">Verstuur intake-aanvraag</button>
-          <p class="contact-form__privacy">Je gegevens gebruik ik alleen om contact met je op te nemen over je aanvraag.</p>
+          <button class="btn btn-gold" type="submit"><?php echo esc_html( fbf_field( 'formulier_knop', 'Verstuur intake-aanvraag' ) ); ?></button>
+          <p class="contact-form__privacy"><?php echo esc_html( fbf_field( 'formulier_privacy', 'Je gegevens gebruik ik alleen om contact met je op te nemen over je aanvraag.' ) ); ?></p>
         </div>
       </form>
     </div>
 
     <div class="intake__direct">
-      <span class="intake__direct-titel">Liever direct contact?</span>
+      <span class="intake__direct-titel"><?php echo esc_html( fbf_field( 'direct_titel', 'Liever direct contact?' ) ); ?></span>
       <div class="intake__direct-knoppen">
         <a href="<?php echo esc_url( $fbf_wa_url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo fbf_icoon( 'whatsapp', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?><span>WhatsApp</span></a>
         <?php $fbf_intake_tel = fbf_tel_href( fbf_contact_phone() ); ?>

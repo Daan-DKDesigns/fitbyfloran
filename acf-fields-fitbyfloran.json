@@ -383,6 +383,42 @@
                 "new_lines": "",
                 "instructions": "Elke regel wordt een punt met een vinkje. Leeg laten = geen punten.",
                 "default_value": "Gratis en vrijblijvend kennismakingsgesprek\nPersoonlijk advies over jouw situatie en doelen\nEen plan dat past bij jouw sport en niveau"
+            },
+            {
+                "key": "field_fbf_formulier_titel",
+                "label": "Formulier: titel",
+                "name": "formulier_titel",
+                "type": "text",
+                "default_value": "Plan je gratis intake"
+            },
+            {
+                "key": "field_fbf_formulier_tekst",
+                "label": "Formulier: tekst onder de titel",
+                "name": "formulier_tekst",
+                "type": "text",
+                "default_value": "Binnen een minuut ingevuld. Ik neem daarna persoonlijk contact met je op."
+            },
+            {
+                "key": "field_fbf_formulier_knop",
+                "label": "Formulier: tekst op de verzendknop",
+                "name": "formulier_knop",
+                "type": "text",
+                "default_value": "Verstuur intake-aanvraag"
+            },
+            {
+                "key": "field_fbf_formulier_privacy",
+                "label": "Formulier: kleine tekst onder de knop",
+                "name": "formulier_privacy",
+                "type": "text",
+                "default_value": "Je gegevens gebruik ik alleen om contact met je op te nemen over je aanvraag.",
+                "instructions": "Bijv. hoe je met de gegevens omgaat."
+            },
+            {
+                "key": "field_fbf_direct_titel",
+                "label": "Kopje boven de knoppen WhatsApp, bellen en e-mail",
+                "name": "direct_titel",
+                "type": "text",
+                "default_value": "Liever direct contact?"
             }
         ],
         "location": [
