@@ -79,3 +79,9 @@ function fbf_hulpvragen() {
 	$groepen['Anders'] = array( 'Iets anders' );
 	return $groepen;
 }
+
+/** De punten naast het intakeformulier (één per regel in het veld "contact_punten"). */
+function fbf_intake_punten() {
+	$tekst = fbf_field( 'contact_punten', "Gratis en vrijblijvend kennismakingsgesprek\nPersoonlijk advies over jouw situatie en doelen\nEen plan dat past bij jouw sport en niveau", fbf_front_id() );
+	return array_values( array_filter( array_map( 'trim', preg_split( '/\R+/', (string) $tekst ) ), 'strlen' ) );
+}

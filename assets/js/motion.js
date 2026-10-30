@@ -16,7 +16,7 @@
         var selectors = [
             'main .kicker', 'main h2', 'main .lead', '.copy p', '.copy .btn',
             '.step', '.service', '.special-card', '.partner-logo', '.partner-note',
-            '.about-images img', '.second img', '.contact-form', '.footer-top > div'
+            '.about-images img', '.second img', '.intake__punten li', '.contact-form', '.intake__direct', '.footer-top > div'
         ];
         var items = document.querySelectorAll(selectors.join(','));
         var viewport = window.innerHeight;

@@ -373,6 +373,16 @@
                 "name": "contact_intro",
                 "type": "textarea",
                 "rows": 2
+            },
+            {
+                "key": "field_fbf_contact_punten",
+                "label": "Punten naast het formulier",
+                "name": "contact_punten",
+                "type": "textarea",
+                "rows": 4,
+                "new_lines": "",
+                "instructions": "Elke regel wordt een punt met een vinkje. Leeg laten = geen punten.",
+                "default_value": "Gratis en vrijblijvend kennismakingsgesprek\nPersoonlijk advies over jouw situatie en doelen\nEen plan dat past bij jouw sport en niveau"
             }
         ],
         "location": [
@@ -565,7 +575,7 @@
                 "label": "E-mailadres",
                 "name": "contact_email",
                 "type": "text",
-                "default_value": "info@fitbyfloran.com",
+                "default_value": "info@fitbyfloran.nl",
                 "instructions": "Hier komen de intake-aanvragen binnen. Staat ook in de footer."
             },
             {

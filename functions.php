@@ -382,20 +382,21 @@ function fbf_default_menu( $args = array() ) {
 }
 
 function fbf_contact_email() {
-	return fbf_field( 'contact_email', 'info@fitbyfloran.com', 'option' );
+	return fbf_field( 'contact_email', 'info@fitbyfloran.nl', 'option' );
 }
 
 /**
- * Eenmalig: het oude hotmail-adres in Site-instellingen vervangen door info@fitbyfloran.com.
- * Alleen als daar nog precies het oude adres staat; een zelf ingevuld ander adres blijft staan.
+ * Eenmalig: een oud adres in Site-instellingen vervangen door info@fitbyfloran.nl.
+ * Alleen als daar nog precies een van de oude adressen staat; een zelf ingevuld ander adres blijft staan.
  */
 add_action( 'admin_init', function () {
-	if ( get_option( 'fbf_email_bijgewerkt' ) || ! current_user_can( 'manage_options' ) ) {
+	if ( get_option( 'fbf_email_bijgewerkt_nl' ) || ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
-	update_option( 'fbf_email_bijgewerkt', 1, false );
-	if ( 'fitbyfloran@hotmail.com' === strtolower( trim( (string) get_option( 'options_contact_email' ) ) ) ) {
-		update_option( 'options_contact_email', 'info@fitbyfloran.com' );
+	update_option( 'fbf_email_bijgewerkt_nl', 1, false );
+	$oude_adressen = array( 'fitbyfloran@hotmail.com', 'info@fitbyfloran.com' );
+	if ( in_array( strtolower( trim( (string) get_option( 'options_contact_email' ) ) ), $oude_adressen, true ) ) {
+		update_option( 'options_contact_email', 'info@fitbyfloran.nl' );
 	}
 } );
 
