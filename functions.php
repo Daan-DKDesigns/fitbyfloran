@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'FBF_VERSION', '1.4.0' );
+define( 'FBF_VERSION', '1.4.1' );
 
 /**
  * Onderhoudsmodus: bezoekers zien "Binnenkort live", ingelogde beheerders de echte site.
@@ -78,6 +78,7 @@ require_once get_template_directory() . '/inc/instellingen.php';
 require_once get_template_directory() . '/inc/blokken.php';
 require_once get_template_directory() . '/inc/content.php';
 require_once get_template_directory() . '/inc/mail.php';
+require_once get_template_directory() . '/inc/aanvragen.php';
 require_once get_template_directory() . '/inc/security.php';
 require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/llms.php';
@@ -454,18 +455,28 @@ function fbf_icoon( $naam, $maat = 18 ) {
 	);
 }
 
+/**
+ * Het intakeformulier afronden. Verstuurd via JavaScript (fbf_ajax=1): een kort JSON-antwoord,
+ * zodat de pagina niet herlaadt en niet opnieuw scrolt. Zonder JavaScript: terug naar de pagina
+ * met de melding, zoals voorheen.
+ */
+function fbf_contact_afronden( $status ) {
+	if ( ! empty( $_POST['fbf_ajax'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+		wp_send_json( array( 'status' => $status ) );
+	}
+	wp_safe_redirect( home_url( '/?contact=' . $status . '#contact' ) );
+	exit;
+}
+
 function fbf_process_contact_form() {
-	$redirect = home_url( '/' );
 
 	if ( ! isset( $_POST['fbf_contact_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['fbf_contact_nonce'] ) ), 'fbf_contact' ) ) {
-		wp_safe_redirect( $redirect . '?contact=fout#contact' );
-		exit;
+		fbf_contact_afronden( 'fout' );
 	}
 
 	// Spam krijgt dezelfde "verzonden"-melding, zodat een robot niet leert wat er misging.
 	if ( fbf_is_spam() ) {
-		wp_safe_redirect( $redirect . '?contact=verzonden#contact' );
-		exit;
+		fbf_contact_afronden( 'verzonden' );
 	}
 
 	$naam      = isset( $_POST['fbf_naam'] ) ? sanitize_text_field( wp_unslash( $_POST['fbf_naam'] ) ) : '';
@@ -477,14 +488,12 @@ function fbf_process_contact_form() {
 
 	// Naam en e-mail zijn verplicht, en óf een keuze óf een toelichting.
 	if ( $naam === '' || ! is_email( $email ) || ( $hulpvraag === '' && $bericht === '' ) ) {
-		wp_safe_redirect( $redirect . '?contact=fout#contact' );
-		exit;
+		fbf_contact_afronden( 'fout' );
 	}
 
 	// Een naam met een link erin is reclame: stil weigeren, net als andere spam.
 	if ( preg_match( '#https?://|www\.#i', $naam ) ) {
-		wp_safe_redirect( $redirect . '?contact=verzonden#contact' );
-		exit;
+		fbf_contact_afronden( 'verzonden' );
 	}
 	$naam = mb_substr( $naam, 0, 80 );
 
@@ -496,8 +505,7 @@ function fbf_process_contact_form() {
 	if ( $hulpvraag !== '' && ! in_array( $hulpvraag, $toegestaan, true ) ) {
 		$hulpvraag = '';
 		if ( $bericht === '' ) {
-			wp_safe_redirect( $redirect . '?contact=fout#contact' );
-			exit;
+			fbf_contact_afronden( 'fout' );
 		}
 	}
 
@@ -509,9 +517,18 @@ function fbf_process_contact_form() {
 		'bericht'   => $bericht,
 	);
 
+	// 0. Altijd eerst bewaren in het admin (Intake-aanvragen): zo gaat er nooit een aanvraag verloren.
+	$bewaard = fbf_aanvraag_bewaren( $gegevens );
+
 	// 1. De aanvraag naar Floran (adres uit Site-instellingen). "Beantwoorden" gaat naar de bezoeker.
 	list( $onderwerp, $html, $tekst ) = fbf_mail_aanvraag( $gegevens );
 	$sent = fbf_mail_versturen( fbf_contact_email(), $onderwerp, $html, $tekst, $naam . ' <' . $email . '>' );
+	if ( $sent ) {
+		delete_option( 'fbf_mail_fout' ); // Mail werkt (weer): de foutmelding in het admin mag weg.
+		if ( $bewaard ) {
+			update_post_meta( $bewaard, 'fbf_mail_ok', '1' );
+		}
+	}
 
 	// 2. Bevestiging naar de bezoeker: alleen als de aanvraag goed is verstuurd,
 	//    en hooguit één keer per 10 minuten per e-mailadres.
@@ -524,8 +541,9 @@ function fbf_process_contact_form() {
 		}
 	}
 
-	wp_safe_redirect( $redirect . ( $sent ? '?contact=verzonden#contact' : '?contact=fout#contact' ) );
-	exit;
+	// Alleen "verzonden" als de e-mail echt is verstuurd. Mislukt de mail, dan krijgt de bezoeker
+	// een foutmelding (met WhatsApp als alternatief); de aanvraag staat wel als back-up in het admin.
+	fbf_contact_afronden( $sent ? 'verzonden' : 'fout' );
 }
 add_action( 'admin_post_fbf_contact', 'fbf_process_contact_form' );
 add_action( 'admin_post_nopriv_fbf_contact', 'fbf_process_contact_form' );

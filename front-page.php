@@ -209,7 +209,7 @@ $fbf_wa_url         = fbf_whatsapp_url();
         <p class="contact-form__notice contact-form__notice--err" role="alert">Je aanvraag kon niet worden verstuurd. Vul je naam, een geldig e-mailadres en een keuze of toelichting in, of stuur een WhatsApp.</p>
       <?php endif; ?>
 
-      <form class="contact-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+      <form class="contact-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" data-whatsapp="<?php echo esc_url( $fbf_wa_url ); ?>">
         <div class="contact-form__head">
           <h3><?php echo esc_html( fbf_field( 'formulier_titel', 'Plan je gratis intake' ) ); ?></h3>
           <p><?php echo esc_html( fbf_field( 'formulier_tekst', 'Binnen een minuut ingevuld. Ik neem daarna persoonlijk contact met je op.' ) ); ?></p>

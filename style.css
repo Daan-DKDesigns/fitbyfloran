@@ -3,7 +3,7 @@ Theme Name: Fit by Floran
 Theme URI: https://www.fitbyfloran.nl
 Author: DK Designs
 Description: Maatwerkthema voor Fit by Floran, High Performance Physiotherapy. Gebouwd op basis van de door de klant aangeleverde demo. Header, hero-blok, aanpak-blok en de trajecten/prijsopgaves zijn via het WordPress-admin (ACF) te beheren.
-Version: 1.4.0
+Version: 1.4.1
 Requires at least: 6.0
 Requires PHP: 7.4
 Text Domain: fitbyfloran
@@ -1176,4 +1176,61 @@ html.fbf-menu-open body {
 /* Ruimte onder de footer, zodat de vaste WhatsApp-knop de onderste regel niet bedekt */
 footer {
     padding-bottom: 96px;
+}
+
+/* Intakeformulier: bevestiging op dezelfde plek na versturen (zonder herladen) */
+.contact-form.is-verstuurd {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.contact-form__klaar {
+    max-width: 420px;
+    margin: 0 auto;
+    outline: none;
+    animation: fbf-up .6s var(--fbf-ease, ease) both;
+}
+
+.contact-form__vink {
+    display: inline-grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 18px;
+    border: 1px solid rgba(212, 175, 55, .55);
+    border-radius: 50%;
+    color: var(--gold2);
+    background: rgba(212, 175, 55, .08);
+}
+
+.contact-form__klaar h3 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    color: var(--white);
+}
+
+.contact-form__klaar p {
+    margin: 0 0 18px;
+    color: #c9cdcf;
+    line-height: 1.6;
+}
+
+.contact-form__klaar-wa {
+    color: var(--gold2);
+    font-size: 14px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.contact-form button[disabled] {
+    opacity: .7;
+    cursor: wait;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contact-form__klaar {
+        animation: none;
+    }
 }
