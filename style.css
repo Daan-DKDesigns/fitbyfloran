@@ -3,7 +3,7 @@ Theme Name: Fit by Floran
 Theme URI: https://www.fitbyfloran.nl
 Author: DK Designs
 Description: Maatwerkthema voor Fit by Floran, High Performance Physiotherapy. Gebouwd op basis van de door de klant aangeleverde demo. Header, hero-blok, aanpak-blok en de trajecten/prijsopgaves zijn via het WordPress-admin (ACF) te beheren.
-Version: 1.2.0
+Version: 1.4.0
 Requires at least: 6.0
 Requires PHP: 7.4
 Text Domain: fitbyfloran
@@ -75,38 +75,171 @@ h3{font-size:20px;margin:0 0 9px}
 .partner-logo span{font-size:9px;display:block;letter-spacing:.13em;color:var(--gold2);text-align:center;font-weight:900}
 .partner-logo .partner-initial{font-size:22px;letter-spacing:.04em;font-weight:700}
 .partner-logo img{max-height:48px;max-width:100%;width:auto;object-fit:contain}
+.partner-logo--logo{background:#f3f0e9;border-color:#f3f0e9}
+.partner-logo--logo span{color:#5e666c}
+.partner-logo--logo img{max-height:56px}
 .partner-note{font-size:11px;color:#72777b;margin-top:16px}
-.cta{background:linear-gradient(135deg,#101113,#1a1c1f);text-align:center;border-top:1px solid #282b2d}
-.cta .lead{margin:0 auto 30px}
 footer{background:#050505;border-top:1px solid rgba(212,175,55,.25);padding:45px 0 22px}
 .footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:35px;align-items:start}
 footer .custom-logo{width:auto;height:auto;max-width:300px;max-height:95px;object-fit:contain}
 footer .logo-text{font-size:20px;font-weight:800;letter-spacing:.04em}
 footer .logo-text span{color:var(--gold2)}
 footer h4{margin:0 0 12px;color:var(--gold2);font-size:11px;letter-spacing:.16em;text-transform:uppercase}
-.social{display:flex;gap:10px;margin-top:15px}
-.social a{width:42px;height:42px;border:1px solid #555;border-radius:50%;display:grid;place-items:center;text-decoration:none;font-weight:900;font-size:14px}
-.social a:hover{border-color:var(--gold);color:var(--gold2)}
-.footer-contact{display:flex;flex-direction:column;gap:6px}
-.footer-contact a{color:inherit;text-decoration:none}
-.footer-contact a:hover{color:var(--gold2)}
+.footer-contact{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.footer-contact a{display:inline-flex;align-items:center;gap:10px;color:#c8ccce;text-decoration:none;min-height:28px}
+.footer-contact a:hover,.footer-contact a:focus-visible{color:var(--gold2)}
+.footer-contact .icoon{flex:0 0 auto;color:var(--gold2)}
 footer .muted a{color:inherit;text-decoration:none}
 footer .muted a:hover{color:var(--gold2)}
 .footer-bottom{margin-top:35px;padding-top:17px;border-top:1px solid #1e2022;color:#777;font-size:11px;display:flex;justify-content:space-between;gap:20px}
-.whatsapp{position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;background:#25d366;color:#fff;display:grid;place-items:center;z-index:30;text-decoration:none;font-size:25px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
-.whatsapp:hover{transform:scale(1.1)}
+.whatsapp{position:fixed;right:22px;bottom:22px;height:56px;min-width:56px;padding:0 16px;border-radius:28px;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;z-index:30;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.3);transition:transform .2s ease}
+.whatsapp:hover,.whatsapp:focus-visible{transform:translateY(-2px)}
+.whatsapp__label{font-size:13px;font-weight:800;letter-spacing:.02em;white-space:nowrap}
+@media(max-width:650px){.whatsapp{right:16px;bottom:16px;width:56px;padding:0}.whatsapp__label{display:none}}
 @media(max-width:1000px){.hero{background-attachment:scroll}.services{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.about,.second{grid-template-columns:1fr}.partner-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:650px){.hero{min-height:780px}.hero p.lead-text{font-size:17px}.services,.steps,.special,.partner-grid{grid-template-columns:1fr}.about-images{grid-template-columns:1fr;gap:6px}.about-images img:first-child{grid-row:span 1;height:auto}.footer-top{grid-template-columns:1fr}}
+@media(max-width:650px){.hero{min-height:780px}.hero p.lead-text{font-size:17px}.services,.steps,.special{grid-template-columns:1fr}.partner-grid{grid-template-columns:1fr 1fr}.about-images{grid-template-columns:1fr;gap:6px}.about-images img:first-child{grid-row:span 1;height:auto}.footer-top{grid-template-columns:1fr}}
 /* ========================================
-   FIT BY FLORAN CONTACT FORM
+   FIT BY FLORAN CONTACT FORM (intake)
+   Twee kolommen: links de uitnodiging + direct contact, rechts het formulier.
+   Velden met een dunne lijn die goud wordt bij invullen; op mobiel 16px (geen iOS-zoom).
 ======================================== */
 
-.contact-form {
-    width: 100%;
-    max-width: 480px;
-    margin: 0 auto 22px;
-    text-align: left;
+.intake {
     position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(60% 80% at 85% 20%, rgba(212, 175, 55, .10), transparent 60%),
+        linear-gradient(160deg, #0f1012, #17191c 55%, #0b0c0d);
+    border-top: 1px solid #282b2d;
+}
+
+.intake__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    grid-template-areas:
+        "intro form"
+        "direct form";
+    column-gap: clamp(32px, 6vw, 90px);
+    row-gap: 34px;
+    align-items: start;
+}
+
+.intake__intro { grid-area: intro; padding-top: 8px; }
+.intake__form { grid-area: form; }
+.intake__direct { grid-area: direct; align-self: end; }
+
+.intake__intro .lead {
+    margin: 0 0 26px;
+}
+
+.intake__punten {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+}
+
+.intake__punten li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    color: #dfe1e0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.intake__punten .icoon {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    padding: 3px;
+    width: 26px;
+    height: 26px;
+    border: 1px solid rgba(212, 175, 55, .45);
+    border-radius: 50%;
+    color: var(--gold2);
+}
+
+.intake__direct-titel {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--gold2);
+}
+
+.intake__direct-knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.intake__direct-knoppen a {
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 46px;
+    padding: 0 18px;
+    border: 1px solid #3a3d40;
+    color: var(--white);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    transition: border-color .25s ease, color .25s ease, transform .25s ease;
+}
+
+.intake__direct-knoppen a .icoon {
+    color: var(--gold2);
+}
+
+.intake__direct-knoppen a:hover,
+.intake__direct-knoppen a:focus-visible {
+    border-color: var(--gold);
+    color: var(--gold2);
+    transform: translateY(-2px);
+}
+
+/* Formulierkaart */
+.contact-form {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: clamp(24px, 3vw, 38px);
+    text-align: left;
+    background: rgba(9, 10, 11, .72);
+    border: 1px solid rgba(255, 255, 255, .08);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, .45);
+}
+
+.contact-form::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: clamp(24px, 3vw, 38px);
+    width: 56px;
+    height: 2px;
+    background: var(--gold);
+}
+
+.contact-form__head {
+    margin-bottom: 26px;
+}
+
+.contact-form__head h3 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    letter-spacing: -.01em;
+    color: var(--white);
+}
+
+.contact-form__head p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
 }
 
 .contact-form__honeypot {
@@ -118,121 +251,161 @@ footer .muted a:hover{color:var(--gold2)}
 }
 
 .contact-form__notice {
-    max-width: 480px;
-    margin: 0 auto 18px;
-    padding: 10px 14px;
-    border-radius: 4px;
+    margin: 0 0 16px;
+    padding: 14px 16px;
     font-size: 14px;
+    text-align: left;
 }
 
 .contact-form__notice--ok {
     border: 1px solid var(--gold);
+    background: rgba(212, 175, 55, .08);
     color: var(--gold2);
 }
 
 .contact-form__notice--err {
     border: 1px solid #c44;
+    background: rgba(204, 68, 68, .08);
     color: #f5c0c0;
 }
 
 .contact-form__row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0 12px;
+    gap: 0 22px;
 }
 
 .contact-form__field {
-    margin-bottom: 12px;
+    margin-bottom: 20px;
 }
 
 .contact-form__field label {
     display: block;
-    margin-bottom: 5px;
-
-    font-size: 13px;
-    font-weight: 500;
-    color: #111111;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #c9cdcf;
 }
 
 .contact-form__field label span {
-    color: #777777;
+    color: #8a8e91;
     font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 .contact-form__field input,
+.contact-form__field select,
 .contact-form__field textarea {
     width: 100%;
-    padding: 9px 12px;
-
-    background: #ffffff;
-
-    border: 1px solid #d8d2bc;
-    border-radius: 4px;
-
-    color: #111111;
-
+    min-height: 46px;
+    padding: 10px 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #45494c;
+    border-radius: 0;
+    color: var(--white);
     font-family: inherit;
-    font-size: 14px;
+    font-size: 16px;
+    transition: border-color .25s ease, box-shadow .25s ease;
+}
 
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+.contact-form__field select {
+    appearance: none;
+    padding-right: 26px;
+    cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, var(--gold2) 50%), linear-gradient(135deg, var(--gold2) 50%, transparent 50%);
+    background-position: calc(100% - 10px) 52%, calc(100% - 5px) 52%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+}
+
+.contact-form__field select:invalid {
+    color: #8a8e91;
+}
+
+.contact-form__field select option,
+.contact-form__field select optgroup {
+    background: #0d0f11;
+    color: var(--white);
 }
 
 .contact-form__field textarea {
-    min-height: 96px;
+    min-height: 78px;
     resize: vertical;
 }
 
 .contact-form__field input::placeholder,
 .contact-form__field textarea::placeholder {
-    color: #999999;
+    color: #6f7478;
 }
 
 .contact-form__field input:focus,
+.contact-form__field select:focus,
 .contact-form__field textarea:focus {
     outline: none;
-
-    border-color: #c9a15b;
-
-    box-shadow: 0 0 0 2px rgba(201, 161, 91, 0.15);
+    border-bottom-color: var(--gold);
+    box-shadow: 0 1px 0 0 var(--gold);
 }
 
 .contact-form__submit {
-    margin-top: 4px;
-}
-
-@media (max-width: 650px) {
-    .contact-form__row {
-        grid-template-columns: 1fr;
-    }
+    margin-top: 8px;
 }
 
 .contact-form__submit .btn {
     width: 100%;
+    min-height: 54px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.contact-form__privacy {
+    margin: 12px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #8a8e91;
     text-align: center;
 }
 
-.contact-form--dark .contact-form__field label {
-    color: #f8f8f6;
+@media (max-width: 1000px) {
+    .intake__grid {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "intro"
+            "form"
+            "direct";
+        row-gap: 30px;
+    }
+
+    .intake__direct {
+        align-self: start;
+    }
 }
 
-.contact-form--dark .contact-form__field label span {
-    color: #8a8e91;
-}
+@media (max-width: 650px) {
+    .contact-form {
+        padding: 24px 18px;
+    }
 
-.contact-form--dark .contact-form__field input,
-.contact-form--dark .contact-form__field textarea {
-    background: #0d0f11;
-    border-color: #333638;
-    color: #f8f8f6;
-}
+    .contact-form__row {
+        grid-template-columns: 1fr;
+    }
 
-.contact-form--dark .contact-form__field input:focus,
-.contact-form--dark .contact-form__field textarea:focus {
-    border-color: var(--gold);
-}
+    .intake__direct-knoppen {
+        gap: 8px;
+    }
 
+    .intake__direct-knoppen a {
+        flex: 1 1 0;
+        justify-content: center;
+        gap: 7px;
+        padding: 0 8px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+}
 
 /* ========================================
    HEADER & NAVIGATIE
@@ -600,4 +773,407 @@ html {
         animation: none;
         transition: none;
     }
+}
+
+/* Contrast (WCAG AA): goudtinten op de lichte achtergrond waren te licht om te lezen */
+.cream .kicker{color:#7a5c1c}
+.step .num{color:#7a5c1c}
+.partner-note{color:#8a8f93}
+.footer-bottom{color:#8a8f93}
+
+/* ========================================
+   MICRO-ANIMATIES
+   Rustig en kort (0,2–0,8 s), met een zachte uitloop. Alles staat uit bij
+   "beweging beperken" en zonder JavaScript blijft de pagina gewoon zichtbaar.
+   ======================================== */
+
+:root {
+    --fbf-ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+/* In beeld komen bij het scrollen (classes gezet door motion.js) */
+.fbf-anim .fbf-reveal {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+    transition: opacity .8s var(--fbf-ease), transform .8s var(--fbf-ease);
+    transition-delay: var(--fbf-delay, 0ms);
+}
+
+.fbf-anim .fbf-reveal.is-in {
+    opacity: 1;
+    transform: none;
+}
+
+.fbf-anim img.fbf-reveal {
+    transform: scale(1.04);
+    transition-duration: 1.1s;
+}
+
+.fbf-anim img.fbf-reveal.is-in {
+    transform: none;
+}
+
+/* Hero: regel voor regel binnenkomen bij het laden */
+@keyframes fbf-up {
+    from { opacity: 0; transform: translate3d(0, 26px, 0); }
+    to { opacity: 1; transform: none; }
+}
+
+.fbf-anim .hero-inner > * {
+    animation: fbf-up .9s var(--fbf-ease) both;
+}
+
+.fbf-anim .hero-inner > :nth-child(1) { animation-delay: .1s; }
+.fbf-anim .hero-inner > :nth-child(2) { animation-delay: .22s; }
+.fbf-anim .hero-inner > :nth-child(3) { animation-delay: .38s; }
+.fbf-anim .hero-inner > :nth-child(4) { animation-delay: .52s; }
+
+.hero-inner {
+    will-change: transform, opacity;
+}
+
+/* Voortgangsbalk bovenaan */
+.fbf-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 10000;
+    background: linear-gradient(90deg, var(--gold), var(--gold2));
+    transform: scaleX(0);
+    transform-origin: left center;
+    pointer-events: none;
+}
+
+/* Header wordt slanker en licht doorschijnend na het scrollen */
+.site-header,
+.site-header__inner {
+    transition: min-height .35s var(--fbf-ease), background-color .35s ease, box-shadow .35s ease;
+}
+
+.site-header.is-scrolled {
+    background: rgba(14, 14, 14, .88);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+
+.site-header.is-scrolled .site-header__inner {
+    min-height: 84px;
+}
+
+/* Knoppen: optillen en een gouden glans bij hover */
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: transform .25s var(--fbf-ease), box-shadow .25s ease, background-color .25s ease, border-color .25s ease, color .25s ease;
+}
+
+.btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60%;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .35), transparent);
+    transform: skewX(-20deg);
+    pointer-events: none;
+}
+
+.btn:hover,
+.btn:focus-visible {
+    transform: translateY(-2px);
+}
+
+.btn-gold:hover,
+.btn-gold:focus-visible {
+    background: var(--gold2);
+    box-shadow: 0 10px 24px rgba(212, 175, 55, .25);
+}
+
+.btn:hover::after,
+.btn:focus-visible::after {
+    left: 120%;
+    transition: left .7s var(--fbf-ease);
+}
+
+/* Kaarten: licht optillen met een gouden rand */
+.step,
+.service,
+.special-card {
+    transition: transform .35s var(--fbf-ease), box-shadow .35s ease, border-color .35s ease;
+}
+
+.step:hover {
+    transform: translateY(-4px);
+    border-color: #c9a15b;
+    box-shadow: 0 16px 34px rgba(17, 17, 17, .08);
+}
+
+.service:hover,
+.special-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(212, 175, 55, .6);
+    box-shadow: 0 20px 44px rgba(0, 0, 0, .4);
+}
+
+.service.featured:hover {
+    border-color: var(--gold);
+}
+
+/* Na het in beeld komen gelden weer de hover-overgangen van de kaart zelf */
+.fbf-anim .step.fbf-reveal.is-in,
+.fbf-anim .service.fbf-reveal.is-in,
+.fbf-anim .special-card.fbf-reveal.is-in {
+    transition: opacity .8s var(--fbf-ease) var(--fbf-delay, 0ms), transform .35s var(--fbf-ease), box-shadow .35s ease, border-color .35s ease;
+}
+
+/* Partnerlogo's: rustig grijs, in kleur bij hover */
+.partner-logo {
+    transition: transform .35s var(--fbf-ease), border-color .35s ease, background-color .35s ease;
+}
+
+.partner-logo img {
+    filter: grayscale(1);
+    opacity: .75;
+    transition: filter .4s ease, opacity .4s ease;
+}
+
+.partner-logo:hover img,
+.partner-logo:focus-visible img {
+    filter: none;
+    opacity: 1;
+}
+
+/* Footer- en formulierlinks */
+.footer-contact a .icoon {
+    transition: transform .3s var(--fbf-ease);
+}
+
+.footer-contact a:hover .icoon {
+    transform: translateX(3px);
+}
+
+/* WhatsApp-knop: één keer zacht pulseren nadat de pagina geladen is */
+@keyframes fbf-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, .55), 0 6px 18px rgba(0, 0, 0, .3); }
+    100% { box-shadow: 0 0 0 16px rgba(37, 211, 102, 0), 0 6px 18px rgba(0, 0, 0, .3); }
+}
+
+.fbf-anim .whatsapp {
+    animation: fbf-pulse 1.6s ease-out 2.5s 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fbf-reveal,
+    .hero-inner > *,
+    .btn,
+    .btn::after,
+    .step,
+    .service,
+    .special-card,
+    .partner-logo,
+    .whatsapp {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+
+    .fbf-progress {
+        display: none;
+    }
+}
+
+/* ========================================
+   MOBIEL MENU: vloeiend openen, schermvullend, met direct-contact
+   ======================================== */
+
+/* Zichtbaar maken via opacity/transform in plaats van display, zodat het kan animeren.
+   visibility: hidden houdt de links uit de tabvolgorde zolang het menu dicht is. */
+.mobile-menu {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 88px);
+    height: calc(100dvh - 88px);
+    padding: 18px 6% 28px;
+    visibility: hidden;
+    opacity: 0;
+    transform: translate3d(0, -10px, 0);
+    transition: opacity .3s ease, transform .4s var(--fbf-ease, ease), visibility 0s linear .4s;
+}
+
+.mobile-menu.is-open {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition: opacity .3s ease, transform .4s var(--fbf-ease, ease), visibility 0s;
+}
+
+.mobile-menu a {
+    font-size: 18px;
+    min-height: 58px;
+}
+
+/* Links schuiven één voor één binnen */
+.mobile-menu li {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+    transition: opacity .35s ease, transform .45s var(--fbf-ease, ease);
+}
+
+.mobile-menu.is-open li {
+    opacity: 1;
+    transform: none;
+}
+
+.mobile-menu.is-open li:nth-child(1) { transition-delay: .06s; }
+.mobile-menu.is-open li:nth-child(2) { transition-delay: .12s; }
+.mobile-menu.is-open li:nth-child(3) { transition-delay: .18s; }
+.mobile-menu.is-open li:nth-child(4) { transition-delay: .24s; }
+.mobile-menu.is-open li:nth-child(5) { transition-delay: .30s; }
+.mobile-menu.is-open li:nth-child(n+6) { transition-delay: .36s; }
+
+.mobile-menu li.nav-cta > a,
+.mobile-menu a.nav-cta {
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+/* Direct contact onderaan */
+.mobile-menu__contact {
+    margin-top: auto;
+    padding-top: 22px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    opacity: 0;
+    transition: opacity .4s ease .3s;
+}
+
+.mobile-menu.is-open .mobile-menu__contact {
+    opacity: 1;
+}
+
+.mobile-menu__contact-titel {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--gold2);
+}
+
+.mobile-menu__contact a {
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-height: 72px;
+    padding: 10px 6px;
+    border: 1px solid var(--line);
+    font-size: 12px;
+    letter-spacing: .06em;
+    text-align: center;
+}
+
+.mobile-menu__contact a:hover,
+.mobile-menu__contact a:focus-visible {
+    border-color: var(--gold);
+}
+
+.mobile-menu__contact .icoon {
+    color: var(--gold2);
+}
+
+/* Pagina eronder staat stil zolang het menu open is */
+html.fbf-menu-open,
+html.fbf-menu-open body {
+    overflow: hidden;
+}
+
+/* Hamburger wordt een kruisje */
+.nav-hamburger__icon line {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform .35s var(--fbf-ease, ease), opacity .2s ease;
+}
+
+.nav-hamburger[aria-expanded="true"] .nav-hamburger__icon line:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.nav-hamburger[aria-expanded="true"] .nav-hamburger__icon line:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-hamburger[aria-expanded="true"] .nav-hamburger__icon line:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+@media (min-width: 1001px) {
+    .mobile-menu {
+        display: none;
+    }
+}
+
+@media (max-width: 650px) {
+    .mobile-menu {
+        height: calc(100vh - 78px);
+        height: calc(100dvh - 78px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mobile-menu,
+    .mobile-menu li,
+    .mobile-menu__contact,
+    .nav-hamburger__icon line {
+        transition: none !important;
+    }
+}
+
+/* Toegankelijkheid: link "Naar de inhoud", alleen zichtbaar bij toetsenbordfocus */
+.skip-link {
+    position: absolute;
+    left: 12px;
+    top: -60px;
+    z-index: 10001;
+    padding: 12px 18px;
+    background: var(--gold);
+    color: #090909;
+    font-weight: 800;
+    text-decoration: none;
+    transition: top .2s ease;
+}
+
+.skip-link:focus {
+    top: 12px;
+}
+
+/* Credit in de footer */
+.footer-credit a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(212, 175, 55, .5);
+    text-underline-offset: 3px;
+    transition: color .2s ease;
+}
+
+.footer-credit a:hover,
+.footer-credit a:focus-visible {
+    color: var(--gold2);
+}
+
+@media (max-width: 650px) {
+    .footer-bottom {
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+
+/* Ruimte onder de footer, zodat de vaste WhatsApp-knop de onderste regel niet bedekt */
+footer {
+    padding-bottom: 96px;
 }

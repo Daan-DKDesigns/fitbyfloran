@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+<a class="skip-link" href="#inhoud"><?php esc_html_e( 'Naar de inhoud', 'fitbyfloran' ); ?></a>
 
 <header class="site-header">
     <div class="container site-header__inner">
@@ -81,5 +82,19 @@ if ( ! defined( 'ABSPATH' ) ) {
             ) );
             ?>
         </nav>
+        <?php
+        $fbf_menu_tel  = fbf_tel_href( fbf_contact_phone() );
+        $fbf_menu_mail = fbf_contact_email();
+        ?>
+        <div class="mobile-menu__contact">
+            <span class="mobile-menu__contact-titel"><?php esc_html_e( 'Direct contact', 'fitbyfloran' ); ?></span>
+            <a href="<?php echo esc_url( fbf_whatsapp_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php echo fbf_icoon( 'whatsapp' ); // phpcs:ignore WordPress.Security.EscapeOutput ?><span>WhatsApp</span></a>
+            <?php if ( $fbf_menu_tel ) : ?>
+            <a href="<?php echo esc_url( $fbf_menu_tel ); ?>"><?php echo fbf_icoon( 'telefoon' ); // phpcs:ignore WordPress.Security.EscapeOutput ?><span><?php esc_html_e( 'Bellen', 'fitbyfloran' ); ?></span></a>
+            <?php endif; ?>
+            <?php if ( $fbf_menu_mail ) : ?>
+            <a href="mailto:<?php echo esc_attr( $fbf_menu_mail ); ?>"><?php echo fbf_icoon( 'mail' ); // phpcs:ignore WordPress.Security.EscapeOutput ?><span><?php esc_html_e( 'E-mail', 'fitbyfloran' ); ?></span></a>
+            <?php endif; ?>
+        </div>
     </div>
 </header>

@@ -1,14 +1,19 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'FBF_VERSION', '1.3.0' );
+define( 'FBF_VERSION', '1.4.0' );
 
 /**
  * Onderhoudsmodus: bezoekers zien "Binnenkort live", ingelogde beheerders de echte site.
- * Uitzetten bij livegang: zet hier false, of definieer FBF_MAINTENANCE in wp-config.php.
+ * Aan/uit via Fit by Floran → Site-instellingen → "Onderhoudsmodus" (standaard aan).
+ * FBF_MAINTENANCE in wp-config.php gaat altijd voor, mocht het admin onbereikbaar zijn.
  */
-if ( ! defined( 'FBF_MAINTENANCE' ) ) {
-	define( 'FBF_MAINTENANCE', true );
+function fbf_onderhoud_aan() {
+	if ( defined( 'FBF_MAINTENANCE' ) ) {
+		return (bool) FBF_MAINTENANCE;
+	}
+	$waarde = get_option( 'options_onderhoudsmodus', null ); // Zo slaat ACF een veld op een opties-pagina op.
+	return null === $waarde ? true : (bool) $waarde;
 }
 
 /** Theme setup */
@@ -25,8 +30,17 @@ add_action( 'after_setup_theme', 'fbf_setup' );
 function fbf_assets() {
 	wp_enqueue_style( 'fbf-style', get_stylesheet_uri(), array(), FBF_VERSION );
 	wp_enqueue_script( 'fbf-main', get_template_directory_uri() . '/assets/js/main.js', array(), FBF_VERSION, true );
+	wp_enqueue_script( 'fbf-motion', get_template_directory_uri() . '/assets/js/motion.js', array(), FBF_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
 }
 add_action( 'wp_enqueue_scripts', 'fbf_assets' );
+
+/**
+ * Micro-animaties alleen aanzetten als JavaScript werkt en de bezoeker geen "beweging beperken"
+ * heeft ingesteld. Staat vroeg in de <head>, zodat de hero-animatie meteen goed start.
+ */
+add_action( 'wp_head', function () {
+	echo "<script>if(!window.matchMedia||!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('fbf-anim')}</script>\n";
+}, 1 );
 
 /** Favicon uit het thema, zolang er geen site-icoon is ingesteld via Aanpassen → Site-identiteit. */
 function fbf_favicon_fallback() {
@@ -71,7 +85,9 @@ function fbf_acf_options_pages() {
 }
 add_action( 'acf/init', 'fbf_acf_options_pages', 5 );
 
+require_once get_template_directory() . '/inc/blokken.php';
 require_once get_template_directory() . '/inc/content.php';
+require_once get_template_directory() . '/inc/mail.php';
 require_once get_template_directory() . '/inc/security.php';
 require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/llms.php';
@@ -164,7 +180,7 @@ function fbf_get_prijsopgaves() {
 	foreach ( $posts as $post ) {
 		$kenmerken = preg_split( '/\r\n|\r|\n/', (string) get_post_meta( $post->ID, 'kenmerken', true ) );
 		$items[]   = array(
-			'titel'         => get_the_title( $post ),
+			'titel'         => $post->post_title,
 			'beschrijving'  => (string) get_post_meta( $post->ID, 'beschrijving', true ),
 			'vanaf_label'   => (string) get_post_meta( $post->ID, 'vanaf_label', true ),
 			'prijs'         => (string) get_post_meta( $post->ID, 'prijs', true ),
@@ -289,6 +305,33 @@ function fbf_register_acf_fields() {
 add_action( 'acf/init', 'fbf_register_acf_fields', 20 );
 
 /**
+ * Voorpagina bewerken: geen blokeditor en geen leeg tekstvak, want alle inhoud komt uit de
+ * velden (in tabbladen per sectie). Zo ziet Floran direct alles wat hij kan aanpassen,
+ * in plaats van een lege editor met de velden helemaal onderaan.
+ */
+function fbf_is_voorpagina_bewerken( $post_id ) {
+	$front = (int) get_option( 'page_on_front' );
+	return $front && (int) $post_id === $front;
+}
+
+add_filter( 'use_block_editor_for_post', function ( $use, $post ) {
+	return ( $post && fbf_is_voorpagina_bewerken( $post->ID ) ) ? false : $use;
+}, 10, 2 );
+
+add_action( 'add_meta_boxes_page', function ( $post ) {
+	if ( fbf_is_voorpagina_bewerken( $post->ID ) ) {
+		remove_post_type_support( 'page', 'editor' );
+	}
+} );
+
+add_action( 'edit_form_after_title', function ( $post ) {
+	if ( ! fbf_is_voorpagina_bewerken( $post->ID ) ) {
+		return;
+	}
+	echo '<div class="notice notice-info inline" style="margin:12px 0"><p><strong>Dit is de voorpagina.</strong> Kies hieronder links een onderdeel (bijv. <em>Over Floran</em>) en pas de teksten en foto\'s aan. Klik daarna rechts op <strong>Bijwerken</strong>. De kaarten van Aanpak, Specialisaties, Samenwerkingen en de prijzen beheer je via hun eigen menu-items links in het admin.</p></div>';
+} );
+
+/**
  * Melding in het admin zolang ACF niet actief is: de site werkt ook zonder,
  * met de ingebouwde voorbeeldteksten, maar zonder ACF kan Floran niets aanpassen.
  */
@@ -340,8 +383,40 @@ function fbf_default_menu( $args = array() ) {
 }
 
 function fbf_contact_email() {
-	return fbf_field( 'contact_email', 'fitbyfloran@hotmail.com', 'option' );
+	return fbf_field( 'contact_email', 'info@fitbyfloran.nl', 'option' );
 }
+
+/**
+ * Eenmalig: een oud adres in Site-instellingen vervangen door info@fitbyfloran.nl.
+ * Alleen als daar nog precies een van de oude adressen staat; een zelf ingevuld ander adres blijft staan.
+ */
+add_action( 'admin_init', function () {
+	if ( get_option( 'fbf_email_bijgewerkt_nl' ) || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	update_option( 'fbf_email_bijgewerkt_nl', 1, false );
+	$oude_adressen = array( 'fitbyfloran@hotmail.com', 'info@fitbyfloran.com' );
+	if ( in_array( strtolower( trim( (string) get_option( 'options_contact_email' ) ) ), $oude_adressen, true ) ) {
+		update_option( 'options_contact_email', 'info@fitbyfloran.nl' );
+	}
+} );
+
+/** Altijd zichtbaar in de adminbalk of de onderhoudsmodus aan staat, met een link naar de schakelaar. */
+add_action( 'admin_bar_menu', function ( $bar ) {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$aan = fbf_onderhoud_aan();
+	$bar->add_node( array(
+		'id'    => 'fbf-onderhoud',
+		'title' => $aan ? '&#9679; Onderhoudsmodus AAN' : '&#9679; Site is live',
+		'href'  => admin_url( 'admin.php?page=fbf-options' ),
+		'meta'  => array(
+			'title' => $aan ? 'Bezoekers zien "Binnenkort live". Klik om dit te wijzigen.' : 'Bezoekers zien de echte site. Klik om de onderhoudsmodus aan te zetten.',
+			'html'  => '<style>#wp-admin-bar-fbf-onderhoud>.ab-item{color:' . ( $aan ? '#f0b849' : '#7ad03a' ) . '!important}</style>',
+		),
+	) );
+}, 100 );
 
 function fbf_contact_phone() {
 	return fbf_field( 'contact_telefoon', '06 3428 0140', 'option' );
@@ -370,6 +445,25 @@ function fbf_whatsapp_url() {
 	return 'https://wa.me/' . $number . '?text=' . rawurlencode( $message );
 }
 
+/** Eenvoudige lijn-iconen (SVG) voor contact en socials, in de kleur van de tekst. */
+function fbf_icoon( $naam, $maat = 18 ) {
+	$paden = array(
+		'mail'      => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+		'telefoon'  => '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+		'whatsapp'  => '<path d="M3.5 20.5 5 16a8.5 8.5 0 1 1 3 3z"/><path d="M9 9.5c.3 2.4 2.1 4.2 4.5 4.5l1-1.3 2 .8-.3 1.6c-.2.6-.8 1-1.4.9-3.6-.5-6.3-3.2-6.8-6.8-.1-.6.3-1.2.9-1.4l1.6-.3.8 2z"/>',
+		'instagram' => '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/>',
+		'linkedin'  => '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/>',
+	);
+	if ( ! isset( $paden[ $naam ] ) ) {
+		return '';
+	}
+	return sprintf(
+		'<svg class="icoon" width="%1$d" height="%1$d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">%2$s</svg>',
+		(int) $maat,
+		$paden[ $naam ]
+	);
+}
+
 function fbf_process_contact_form() {
 	$redirect = home_url( '/' );
 
@@ -388,28 +482,58 @@ function fbf_process_contact_form() {
 	$email     = isset( $_POST['fbf_email'] ) ? sanitize_email( wp_unslash( $_POST['fbf_email'] ) ) : '';
 	$telefoon  = isset( $_POST['fbf_telefoon'] ) ? sanitize_text_field( wp_unslash( $_POST['fbf_telefoon'] ) ) : '';
 	$bericht   = isset( $_POST['fbf_bericht'] ) ? sanitize_textarea_field( wp_unslash( $_POST['fbf_bericht'] ) ) : '';
+	$hulpvraag = isset( $_POST['fbf_hulpvraag'] ) ? mb_substr( sanitize_text_field( wp_unslash( $_POST['fbf_hulpvraag'] ) ), 0, 100 ) : '';
 	$naam      = str_replace( array( "\r", "\n" ), '', $naam );
 
-	if ( $naam === '' || ! is_email( $email ) || $bericht === '' ) {
+	// Naam en e-mail zijn verplicht, en óf een keuze óf een toelichting.
+	if ( $naam === '' || ! is_email( $email ) || ( $hulpvraag === '' && $bericht === '' ) ) {
 		wp_safe_redirect( $redirect . '?contact=fout#contact' );
 		exit;
 	}
 
-	$to      = fbf_contact_email();
-	$subject = 'Aanvraag via fitbyfloran.nl — ' . $naam;
-	$body    = "Naam: {$naam}\nE-mail: {$email}\nTelefoon: {$telefoon}\n\nBericht:\n{$bericht}\n";
-	$headers = array(
-		'Content-Type: text/plain; charset=UTF-8',
-		'Reply-To: ' . $naam . ' <' . $email . '>',
+	// Een naam met een link erin is reclame: stil weigeren, net als andere spam.
+	if ( preg_match( '#https?://|www\.#i', $naam ) ) {
+		wp_safe_redirect( $redirect . '?contact=verzonden#contact' );
+		exit;
+	}
+	$naam = mb_substr( $naam, 0, 80 );
+
+	// Alleen keuzes uit de vaste lijst tellen als hulpvraag.
+	$toegestaan = array();
+	foreach ( fbf_hulpvragen() as $opties ) {
+		$toegestaan = array_merge( $toegestaan, $opties );
+	}
+	if ( $hulpvraag !== '' && ! in_array( $hulpvraag, $toegestaan, true ) ) {
+		$hulpvraag = '';
+		if ( $bericht === '' ) {
+			wp_safe_redirect( $redirect . '?contact=fout#contact' );
+			exit;
+		}
+	}
+
+	$gegevens = array(
+		'naam'      => $naam,
+		'email'     => $email,
+		'telefoon'  => $telefoon,
+		'hulpvraag' => $hulpvraag,
+		'bericht'   => $bericht,
 	);
 
-	// Afzendernaam "Fit by Floran" i.p.v. "WordPress"; het afzenderadres laat WordPress/SMTP-plugin ongemoeid.
-	$from_name = static function () {
-		return 'Fit by Floran';
-	};
-	add_filter( 'wp_mail_from_name', $from_name );
-	$sent = wp_mail( $to, $subject, $body, $headers );
-	remove_filter( 'wp_mail_from_name', $from_name );
+	// 1. De aanvraag naar Floran (adres uit Site-instellingen). "Beantwoorden" gaat naar de bezoeker.
+	list( $onderwerp, $html, $tekst ) = fbf_mail_aanvraag( $gegevens );
+	$sent = fbf_mail_versturen( fbf_contact_email(), $onderwerp, $html, $tekst, $naam . ' <' . $email . '>' );
+
+	// 2. Bevestiging naar de bezoeker: alleen als de aanvraag goed is verstuurd,
+	//    en hooguit één keer per 10 minuten per e-mailadres.
+	if ( $sent ) {
+		$slot = 'fbf_bevestigd_' . md5( strtolower( $email ) );
+		if ( ! get_transient( $slot ) ) {
+			set_transient( $slot, 1, 10 * MINUTE_IN_SECONDS );
+			list( $onderwerp, $html, $tekst ) = fbf_mail_bevestiging( $gegevens );
+			fbf_mail_versturen( $email, $onderwerp, $html, $tekst, 'Fit by Floran <' . fbf_contact_email() . '>' );
+		}
+	}
+
 	wp_safe_redirect( $redirect . ( $sent ? '?contact=verzonden#contact' : '?contact=fout#contact' ) );
 	exit;
 }
@@ -418,7 +542,7 @@ add_action( 'admin_post_nopriv_fbf_contact', 'fbf_process_contact_form' );
 
 function fitbyfloran_maintenance_mode() {
 	// robots.txt en favicon.ico blijven bereikbaar, ook voor zoekmachines tijdens het onderhoud.
-	if ( ! FBF_MAINTENANCE || is_admin() || is_robots() || is_favicon() || current_user_can( 'manage_options' ) ) {
+	if ( ! fbf_onderhoud_aan() || is_admin() || is_robots() || is_favicon() || current_user_can( 'manage_options' ) ) {
 		return;
 	}
 

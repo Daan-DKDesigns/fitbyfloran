@@ -19,24 +19,21 @@ $fbf_linkedin   = fbf_field( 'linkedin_url', '', 'option' );
       </div>
       <div>
         <h4>Contact</h4>
-        <div class="footer-contact muted">
-          <a href="mailto:<?php echo esc_attr( $fbf_email ); ?>"><?php echo esc_html( $fbf_email ); ?></a>
-          <?php if ( $fbf_tel ) : ?>
-            <a href="<?php echo esc_url( $fbf_tel ); ?>"><?php echo esc_html( $fbf_telefoon ); ?></a>
-          <?php else : ?>
-            <span><?php echo esc_html( $fbf_telefoon ); ?></span>
+        <ul class="footer-contact">
+          <?php if ( $fbf_email ) : ?>
+          <li><a href="mailto:<?php echo esc_attr( $fbf_email ); ?>"><?php echo fbf_icoon( 'mail' ); // phpcs:ignore WordPress.Security.EscapeOutput ?><span><?php echo esc_html( $fbf_email ); ?></span></a></li>
           <?php endif; ?>
-        </div>
-        <?php if ( $fbf_instagram || $fbf_linkedin ) : ?>
-        <div class="social">
+          <?php if ( $fbf_telefoon ) : ?>
+          <li><a href="<?php echo esc_url( $fbf_tel ); ?>"><?php echo fbf_icoon( 'telefoon' ); // phpcs:ignore WordPress.Security.EscapeOutput ?><span><?php echo esc_html( $fbf_telefoon ); ?></span></a></li>
+          <?php endif; ?>
+          <li><a href="<?php echo esc_url( $fbf_wa_url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo fbf_icoon( 'whatsapp' ); // phpcs:ignore WordPress.Security.EscapeOutput ?><span>Stuur een WhatsApp</span></a></li>
           <?php if ( $fbf_instagram ) : ?>
-            <a href="<?php echo esc_url( $fbf_instagram ); ?>" target="_blank" rel="noopener noreferrer" aria-label="Instagram">&#9673;</a>
+          <li><a href="<?php echo esc_url( $fbf_instagram ); ?>" target="_blank" rel="noopener noreferrer"><?php echo fbf_icoon( 'instagram' ); // phpcs:ignore WordPress.Security.EscapeOutput ?><span>Instagram</span></a></li>
           <?php endif; ?>
           <?php if ( $fbf_linkedin ) : ?>
-            <a href="<?php echo esc_url( $fbf_linkedin ); ?>" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
+          <li><a href="<?php echo esc_url( $fbf_linkedin ); ?>" target="_blank" rel="noopener noreferrer"><?php echo fbf_icoon( 'linkedin' ); // phpcs:ignore WordPress.Security.EscapeOutput ?><span>LinkedIn</span></a></li>
           <?php endif; ?>
-        </div>
-        <?php endif; ?>
+        </ul>
       </div>
       <div>
         <h4>Informatie</h4>
@@ -49,15 +46,14 @@ $fbf_linkedin   = fbf_field( 'linkedin_url', '', 'option' );
     <div class="footer-bottom">
       <span>&copy; <?php echo esc_html( wp_date( 'Y' ) ); ?> Fit by Floran &ndash; High Performance Physiotherapy</span>
       <span>Meer dan herstellen. Presteren op je hoogste niveau.</span>
+      <span class="footer-credit">Website: <a href="https://dkdesigns.nl/" target="_blank" rel="noopener">DKDesigns</a></span>
     </div>
   </div>
 </footer>
 
-<a class="whatsapp" href="<?php echo esc_url( $fbf_wa_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3z"></path>
-    <path d="M8.5 9.5c0 3.5 2.5 6 6 6" stroke-width="1.6"></path>
-  </svg>
+<a class="whatsapp" href="<?php echo esc_url( $fbf_wa_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="Stuur Floran een WhatsApp-bericht">
+  <?php echo fbf_icoon( 'whatsapp', 28 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+  <span class="whatsapp__label"><?php echo esc_html( fbf_field( 'whatsapp_knoptekst', 'Vragen? App me', 'option' ) ); ?></span>
 </a>
 
 <?php wp_footer(); ?>

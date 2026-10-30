@@ -8,8 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    const icon = document.getElementById('hamburgerIcon');
-
     function setMenuOpen(open) {
         hamburger.setAttribute('aria-expanded', String(open));
         hamburger.setAttribute(
@@ -20,14 +18,9 @@ document.addEventListener('DOMContentLoaded', function () {
         mobileMenu.classList.toggle('is-open', open);
         mobileMenu.setAttribute('aria-hidden', String(!open));
 
-        if (icon) {
-            icon.innerHTML = open
-                ? '<line x1="18" y1="6" x2="6" y2="18"></line>' +
-                  '<line x1="6" y1="6" x2="18" y2="18"></line>'
-                : '<line x1="3" y1="6" x2="21" y2="6"></line>' +
-                  '<line x1="3" y1="12" x2="21" y2="12"></line>' +
-                  '<line x1="3" y1="18" x2="21" y2="18"></line>';
-        }
+        // De pagina eronder scrollt niet mee zolang het menu open is.
+        // Het hamburgericoon wordt via CSS (aria-expanded) een kruisje.
+        document.documentElement.classList.toggle('fbf-menu-open', open);
     }
 
     hamburger.addEventListener('click', function () {
@@ -35,6 +28,14 @@ document.addEventListener('DOMContentLoaded', function () {
             hamburger.getAttribute('aria-expanded') === 'true';
 
         setMenuOpen(!isOpen);
+
+        // Toetsenbord en schermlezer: na openen meteen in het menu, na sluiten terug op de knop.
+        if (!isOpen) {
+            const eerste = mobileMenu.querySelector('a');
+            if (eerste) {
+                window.setTimeout(function () { eerste.focus({ preventScroll: true }); }, 50);
+            }
+        }
     });
 
     // Sluit met Escape
@@ -62,3 +63,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 }); 
+
+// Intakeformulier: een knop bij een traject of specialisatie vult "Waar kan ik je mee helpen?" alvast in.
+document.addEventListener('DOMContentLoaded', function () {
+    const keuze = document.getElementById('fbf_hulpvraag');
+    if (!keuze) {
+        return;
+    }
+
+    document.addEventListener('click', function (event) {
+        const knop = event.target.closest('[data-hulpvraag]');
+        if (!knop) {
+            return;
+        }
+        const waarde = knop.getAttribute('data-hulpvraag');
+        const optie = Array.prototype.find.call(keuze.options, function (o) {
+            return o.value === waarde;
+        });
+        if (optie) {
+            keuze.value = waarde;
+        }
+    });
+});
