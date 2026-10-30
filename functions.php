@@ -78,6 +78,7 @@ require_once get_template_directory() . '/inc/instellingen.php';
 require_once get_template_directory() . '/inc/blokken.php';
 require_once get_template_directory() . '/inc/content.php';
 require_once get_template_directory() . '/inc/mail.php';
+require_once get_template_directory() . '/inc/aanvragen.php';
 require_once get_template_directory() . '/inc/security.php';
 require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/llms.php';
@@ -509,9 +510,18 @@ function fbf_process_contact_form() {
 		'bericht'   => $bericht,
 	);
 
+	// 0. Altijd eerst bewaren in het admin (Intake-aanvragen): zo gaat er nooit een aanvraag verloren.
+	$bewaard = fbf_aanvraag_bewaren( $gegevens );
+
 	// 1. De aanvraag naar Floran (adres uit Site-instellingen). "Beantwoorden" gaat naar de bezoeker.
 	list( $onderwerp, $html, $tekst ) = fbf_mail_aanvraag( $gegevens );
 	$sent = fbf_mail_versturen( fbf_contact_email(), $onderwerp, $html, $tekst, $naam . ' <' . $email . '>' );
+	if ( $sent ) {
+		delete_option( 'fbf_mail_fout' ); // Mail werkt (weer): de foutmelding in het admin mag weg.
+		if ( $bewaard ) {
+			update_post_meta( $bewaard, 'fbf_mail_ok', '1' );
+		}
+	}
 
 	// 2. Bevestiging naar de bezoeker: alleen als de aanvraag goed is verstuurd,
 	//    en hooguit één keer per 10 minuten per e-mailadres.
@@ -524,6 +534,8 @@ function fbf_process_contact_form() {
 		}
 	}
 
+	// Alleen "verzonden" als de e-mail echt is verstuurd. Mislukt de mail, dan krijgt de bezoeker
+	// een foutmelding (met WhatsApp als alternatief); de aanvraag staat wel als back-up in het admin.
 	wp_safe_redirect( $redirect . ( $sent ? '?contact=verzonden#contact' : '?contact=fout#contact' ) );
 	exit;
 }
