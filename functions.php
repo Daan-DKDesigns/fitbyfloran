@@ -165,7 +165,7 @@ function fbf_get_prijsopgaves() {
 	foreach ( $posts as $post ) {
 		$kenmerken = preg_split( '/\r\n|\r|\n/', (string) get_post_meta( $post->ID, 'kenmerken', true ) );
 		$items[]   = array(
-			'titel'         => get_the_title( $post ),
+			'titel'         => $post->post_title,
 			'beschrijving'  => (string) get_post_meta( $post->ID, 'beschrijving', true ),
 			'vanaf_label'   => (string) get_post_meta( $post->ID, 'vanaf_label', true ),
 			'prijs'         => (string) get_post_meta( $post->ID, 'prijs', true ),
@@ -288,6 +288,33 @@ function fbf_register_acf_fields() {
 	}
 }
 add_action( 'acf/init', 'fbf_register_acf_fields', 20 );
+
+/**
+ * Voorpagina bewerken: geen blokeditor en geen leeg tekstvak, want alle inhoud komt uit de
+ * velden (in tabbladen per sectie). Zo ziet Floran direct alles wat hij kan aanpassen,
+ * in plaats van een lege editor met de velden helemaal onderaan.
+ */
+function fbf_is_voorpagina_bewerken( $post_id ) {
+	$front = (int) get_option( 'page_on_front' );
+	return $front && (int) $post_id === $front;
+}
+
+add_filter( 'use_block_editor_for_post', function ( $use, $post ) {
+	return ( $post && fbf_is_voorpagina_bewerken( $post->ID ) ) ? false : $use;
+}, 10, 2 );
+
+add_action( 'add_meta_boxes_page', function ( $post ) {
+	if ( fbf_is_voorpagina_bewerken( $post->ID ) ) {
+		remove_post_type_support( 'page', 'editor' );
+	}
+} );
+
+add_action( 'edit_form_after_title', function ( $post ) {
+	if ( ! fbf_is_voorpagina_bewerken( $post->ID ) ) {
+		return;
+	}
+	echo '<div class="notice notice-info inline" style="margin:12px 0"><p><strong>Dit is de voorpagina.</strong> Kies hieronder links een onderdeel (bijv. <em>Over Floran</em>) en pas de teksten en foto\'s aan. Klik daarna rechts op <strong>Bijwerken</strong>. De kaarten van Aanpak, Specialisaties, Samenwerkingen en de prijzen beheer je via hun eigen menu-items links in het admin.</p></div>';
+} );
 
 /**
  * Melding in het admin zolang ACF niet actief is: de site werkt ook zonder,

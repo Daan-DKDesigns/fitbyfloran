@@ -283,7 +283,7 @@ function fbf_blokken( $type ) {
 
 	$items = array();
 	foreach ( $posts as $post ) {
-		$item = array( 'titel' => get_the_title( $post ) );
+		$item = array( 'titel' => $post->post_title );
 		foreach ( $cfg['velden'] as $veld ) {
 			$item[ $veld['name'] ] = get_post_meta( $post->ID, $veld['name'], true );
 		}
