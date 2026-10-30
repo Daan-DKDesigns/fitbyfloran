@@ -1151,3 +1151,29 @@ html.fbf-menu-open body {
 .skip-link:focus {
     top: 12px;
 }
+
+/* Credit in de footer */
+.footer-credit a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(212, 175, 55, .5);
+    text-underline-offset: 3px;
+    transition: color .2s ease;
+}
+
+.footer-credit a:hover,
+.footer-credit a:focus-visible {
+    color: var(--gold2);
+}
+
+@media (max-width: 650px) {
+    .footer-bottom {
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+
+/* Ruimte onder de footer, zodat de vaste WhatsApp-knop de onderste regel niet bedekt */
+footer {
+    padding-bottom: 96px;
+}

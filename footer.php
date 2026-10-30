@@ -46,6 +46,7 @@ $fbf_linkedin   = fbf_field( 'linkedin_url', '', 'option' );
     <div class="footer-bottom">
       <span>&copy; <?php echo esc_html( wp_date( 'Y' ) ); ?> Fit by Floran &ndash; High Performance Physiotherapy</span>
       <span>Meer dan herstellen. Presteren op je hoogste niveau.</span>
+      <span class="footer-credit">Website: <a href="https://dkdesigns.nl/" target="_blank" rel="noopener">DKDesigns</a></span>
     </div>
   </div>
 </footer>
