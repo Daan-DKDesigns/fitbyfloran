@@ -60,6 +60,11 @@ add_action( 'login_head', 'fbf_favicon_fallback' );
  * er ook goed uitziet voordat iemand de velden heeft ingevuld.
  */
 function fbf_field( $selector, $default = '', $post_id = false ) {
+	// Site-instellingen (menu-item "Fit by Floran") staan als gewone opties, ook zonder ACF Pro.
+	if ( 'option' === $post_id ) {
+		$value = get_option( 'options_' . $selector, '' );
+		return ( $value !== null && $value !== '' ) ? $value : $default;
+	}
 	if ( function_exists( 'get_field' ) ) {
 		$value = get_field( $selector, $post_id );
 		if ( $value !== null && $value !== '' ) {
@@ -69,22 +74,7 @@ function fbf_field( $selector, $default = '', $post_id = false ) {
 	return $default;
 }
 
-/**
- * ACF Options-pagina "Site-instellingen" (WhatsApp/contact), eigen kopje "Fit by Floran".
- */
-function fbf_acf_options_pages() {
-	if ( ! function_exists( 'acf_add_options_page' ) ) {
-		return;
-	}
-	acf_add_options_page( array(
-		'page_title' => 'Site-instellingen',
-		'menu_title' => 'Fit by Floran',
-		'menu_slug'  => 'fbf-options',
-		'capability' => 'edit_theme_options',
-	) );
-}
-add_action( 'acf/init', 'fbf_acf_options_pages', 5 );
-
+require_once get_template_directory() . '/inc/instellingen.php';
 require_once get_template_directory() . '/inc/blokken.php';
 require_once get_template_directory() . '/inc/content.php';
 require_once get_template_directory() . '/inc/mail.php';
