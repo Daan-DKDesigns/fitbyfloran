@@ -87,6 +87,7 @@ add_action( 'acf/init', 'fbf_acf_options_pages', 5 );
 
 require_once get_template_directory() . '/inc/blokken.php';
 require_once get_template_directory() . '/inc/content.php';
+require_once get_template_directory() . '/inc/mail.php';
 require_once get_template_directory() . '/inc/security.php';
 require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/llms.php';
@@ -490,21 +491,49 @@ function fbf_process_contact_form() {
 		exit;
 	}
 
-	$to      = fbf_contact_email();
-	$subject = 'Intake-aanvraag via fitbyfloran.nl — ' . $naam . ( $hulpvraag !== '' ? ' (' . $hulpvraag . ')' : '' );
-	$body    = "Naam: {$naam}\nE-mail: {$email}\nTelefoon: " . ( $telefoon !== '' ? $telefoon : '-' ) . "\nHulpvraag: " . ( $hulpvraag !== '' ? $hulpvraag : '-' ) . "\n\nToelichting:\n" . ( $bericht !== '' ? $bericht : '-' ) . "\n";
-	$headers = array(
-		'Content-Type: text/plain; charset=UTF-8',
-		'Reply-To: ' . $naam . ' <' . $email . '>',
+	// Een naam met een link erin is reclame: stil weigeren, net als andere spam.
+	if ( preg_match( '#https?://|www\.#i', $naam ) ) {
+		wp_safe_redirect( $redirect . '?contact=verzonden#contact' );
+		exit;
+	}
+	$naam = mb_substr( $naam, 0, 80 );
+
+	// Alleen keuzes uit de vaste lijst tellen als hulpvraag.
+	$toegestaan = array();
+	foreach ( fbf_hulpvragen() as $opties ) {
+		$toegestaan = array_merge( $toegestaan, $opties );
+	}
+	if ( $hulpvraag !== '' && ! in_array( $hulpvraag, $toegestaan, true ) ) {
+		$hulpvraag = '';
+		if ( $bericht === '' ) {
+			wp_safe_redirect( $redirect . '?contact=fout#contact' );
+			exit;
+		}
+	}
+
+	$gegevens = array(
+		'naam'      => $naam,
+		'email'     => $email,
+		'telefoon'  => $telefoon,
+		'hulpvraag' => $hulpvraag,
+		'bericht'   => $bericht,
 	);
 
-	// Afzendernaam "Fit by Floran" i.p.v. "WordPress"; het afzenderadres laat WordPress/SMTP-plugin ongemoeid.
-	$from_name = static function () {
-		return 'Fit by Floran';
-	};
-	add_filter( 'wp_mail_from_name', $from_name );
-	$sent = wp_mail( $to, $subject, $body, $headers );
-	remove_filter( 'wp_mail_from_name', $from_name );
+	// 1. De aanvraag naar Floran (adres uit Site-instellingen). "Beantwoorden" gaat naar de bezoeker.
+	list( $onderwerp, $html, $tekst ) = fbf_mail_aanvraag( $gegevens );
+	$sent = fbf_mail_versturen( fbf_contact_email(), $onderwerp, $html, $tekst, $naam . ' <' . $email . '>' );
+
+	// 2. Bevestiging naar de bezoeker: alleen als de aanvraag goed is verstuurd,
+	//    en hooguit één keer per 10 minuten per e-mailadres.
+	if ( $sent ) {
+		$slot = 'fbf_bevestigd_' . md5( strtolower( $email ) );
+		if ( ! get_transient( $slot ) ) {
+			set_transient( $slot, 1, 10 * MINUTE_IN_SECONDS );
+			list( $onderwerp, $html, $tekst ) = fbf_mail_bevestiging( $gegevens );
+			fbf_mail_versturen( $email, $onderwerp, $html, $tekst, 'Fit by Floran <' . fbf_contact_email() . '>' );
+		}
+	}
+
 	wp_safe_redirect( $redirect . ( $sent ? '?contact=verzonden#contact' : '?contact=fout#contact' ) );
 	exit;
 }
